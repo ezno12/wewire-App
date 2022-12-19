@@ -2,6 +2,7 @@ import React from 'react'
 import { StyleSheet, css } from 'aphrodite'
 import logo from '../../assat/wewire.png'
 import logOutIcon from '../../assat/logout.png'
+import { Link } from 'react-router-dom'
 
 const styles = StyleSheet.create({
     navStyle: {
@@ -40,12 +41,12 @@ const styles = StyleSheet.create({
 export default function NavBar() {
   return (
     <nav className={css(styles.navStyle)}>
-  <a><img src={logo} alt="Wewire company logo" /></a>
+  <Link to={'/'}><img src={logo} alt="Wewire company logo" /></Link>
 
   <div>
     <ul className={css(styles.listStyle)}>
       <li>
-        <a href="" className={css(styles.linkStyle)}>Add user</a>
+        <Link to={'/Adduser'} className={css(styles.linkStyle)}>Add user</Link>
       </li>
       <li>
         <a href="" className={css(styles.linkStyle)} >Profile</a>
