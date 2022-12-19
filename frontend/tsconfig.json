@@ -13,8 +13,8 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "module": "esnext",
-    "moduleResolution": "node",
+    "module": "commonjs",
+    "moduleResolution": "node", 
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
@@ -23,4 +23,6 @@
   "include": [
     "src/**/*"
   ]
+
+  
 }

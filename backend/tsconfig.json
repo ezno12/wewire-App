@@ -11,6 +11,10 @@
         "removeComments": true,
         "esModuleInterop": true
     },
-    "include": ["src/**/*", "__tests__/**/*"],
-    "extends": "./tsconfig.paths.json"
+    "include": ["src/**/*", "__tests__/**/*", "jest.config.js"],
+    "extends": "./tsconfig.paths.json",
+    "typeRoots": [
+        "./node_module/@types",
+        "./src/types"
+    ],
 }
