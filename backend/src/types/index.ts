@@ -1,12 +1,14 @@
 export type UserType = {
-    id: number,
-    firstname: string,
-    lastname: string,
+    permission: number | null,
+    username: string,
     email: string,
-    password: string
+    password: string,
+    phone: number,
+    isAdmin: boolean | null  
 }
 
 export type LoginType = {
     email: string,
     password: string
 }
+

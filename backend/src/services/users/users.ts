@@ -1,72 +1,83 @@
 
 import { cryptPassword } from "@helpers/cyptPassword";
-
-import pool from "../../database";
-
 import { UserType, LoginType } from "../../types";
 import bcrypt from 'bcrypt';
+import { User } from '../../../models'
 
+// Get All Users
 export async function selectUsers() {
     try {
-        const sql = `SELECT id, firstname, lastname, email, password FROM public.users `
-        const result = await pool.query(sql)
+        
+        let result = await User.findAll()
         return result;
     } catch (error) {
         console.log(error);
     }
 }
 
+// Get ONE USER by Email or Username or Phone
 export async function selectUsersByEmail(email: string) {
     try {
-        const sql = `SELECT id, firstname, lastname, email, password FROM public.users where email ='${email}'`
-        const result = await pool.query(sql)
+        const result = await User.findOne({ where: { email: email }})
         return result;
     } catch (error) {
         console.log(error);
     }
 }
-
-export async function deleteUserService(firstname: string) {
+// Get ONE USER by Username
+export async function selectUsersByUsername(username: string) {
     try {
-        const sql = `DELETE FROM public.users where firstname='${firstname}'`
-        const result = await pool.query(sql)
+        const result = await User.findOne({ where: { username: username }})
+        return result;
+    } catch (error) {
+        console.log(error);
+    }
+}
+// Get ONE USER by Phone
+export async function selectUsersByPhone(phone: string) {
+    try {
+        const result = await User.findOne({ where: { phone: phone }})
+        return result;
+    } catch (error) {
+        console.log(error);
+    }
+}
+// Delete User
+export async function deleteUserService(username: string) {
+    try {
+        
+        const result = await User.destroy({
+            where: {
+                username: username
+            }
+        })
 
         return result;
     } catch (error) {
         console.log(error);
     }
 }
-
+// Insert new user to DB
 export async function insertUser(objectUser: UserType) {
     try {
-        console.log(cryptPassword(objectUser.password));
-        const sql = `
-            INSERT INTO public.users (firstname, lastname, email, password) 
-            VALUES (
-                '${objectUser.firstname}',
-                '${objectUser.lastname}',
-                '${objectUser.email}',
-                '${cryptPassword(objectUser.password)}'
-            )
-        `
-
-        return await pool.query(sql)
+        
+        objectUser.password = cryptPassword(objectUser.password + 'gs3dFz4hczcywezvY7C9');
+        return await User.create(objectUser)
     } catch (error) {
         console.log(error)
     }
 }
-
+// Check for user login
 export async function verifyLogin(objectLogin: LoginType) {
     try {
-
-        const sql = `
-            SELECT * from public.users 
-            WHERE                
-                email='${objectLogin.email}' `
-        const result = await pool.query(sql)
-        const verify = await bcrypt.compare(objectLogin.password, result.rows[0].password);
+        
+        const result = await User.findOne({
+            where: {email: objectLogin.email}
+        })
+        
+        const verify = await bcrypt.compare(objectLogin.password + 'gs3dFz4hczcywezvY7C9', result.password);
         if (verify) {
-            return (result.rows[0])
+            return (result)
         }
         else {
             return ""
