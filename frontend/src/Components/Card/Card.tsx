@@ -17,6 +17,11 @@ const styles = StyleSheet.create({
     ':hover': {
       backgroundColor: 'red'
     }
+  },
+  cardTitleStyle: {
+    color: 'black',
+    textDecoration: 'none',
+    lineHeight: '3rem'
   }
 })
 
@@ -30,11 +35,11 @@ const card = ({img, title}: cardProps) => {
   
   return (
     <>
-    <Link to={'/table'}>
-    <Card className={css(styles.cardStyle)} >
+    <Link to={'/table'} className={css(styles.cardTitleStyle)}>
+    <Card className={css(styles.cardStyle)}>
       <Card.Img variant="top" className={css(styles.cardImg)} src={img}/>
       <Card.Body>
-        <Card.Title>{title}</Card.Title>
+        <Card.Link className={css(styles.cardTitleStyle)}>{title}</Card.Link>
       </Card.Body>
     </Card>
     </Link>
