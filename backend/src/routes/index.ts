@@ -2,6 +2,7 @@
 import { Application } from "express";
 
 import { usersRouter } from "./users/usersRouter";
+import { DeparRouter } from "./Departments/deparRouter"
 
 
 
@@ -11,5 +12,5 @@ export default (app: Application) => {
         res.json({ message: "API Running ! " });
     });
     
-    app.use("/api/v1", [usersRouter]);
+    app.use("/api/v1", [usersRouter, DeparRouter]);
 };
