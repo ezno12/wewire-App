@@ -39,6 +39,14 @@ const styles = StyleSheet.create({
 })
 
 export default function NavBar() {
+  const user = JSON.parse(localStorage.getItem('user') as any);
+  
+
+  const HandleLogOut = () => {
+    localStorage.clear();
+    window.location.reload();
+  }
+
   return (
     <nav className={css(styles.navStyle)}>
   <Link to={'/'}><img src={logo} alt="Wewire company logo" /></Link>
@@ -52,7 +60,7 @@ export default function NavBar() {
         <a href="" className={css(styles.linkStyle)} >Profile</a>
       </li>
       <li>
-        <a href="" className={css(styles.linkStyle)}>Log Out <img src={logOutIcon} className={css(styles.logOutIconStyle)} /></a>
+        <Link to={'/login'} onClick={HandleLogOut} className={css(styles.linkStyle)}> Log Out <img src={logOutIcon} className={css(styles.logOutIconStyle)} /></Link>
       </li>
     </ul>
   </div>

@@ -105,7 +105,7 @@ export async function login(request: Request, response: Response): Promise<any> 
               );
             return response.status(200).json({
                 error: false,
-                data: [result.isAdmin, result.permission],
+                permissions: {admin: result.isAdmin, perssionlevel: result.permission},
                 token: token
 
             })
