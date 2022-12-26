@@ -1,16 +1,16 @@
 import React, {useEffect, useState} from 'react'
 import Card from './Card'
 import { StyleSheet, css } from 'aphrodite'
-import maImg from '../../assat/departements/management.png'
-import mainImg from '../../assat/departements/maintenance.png'
-import quaImg from '../../assat/departements/quality.png'
-import secImg from '../../assat/departements/security.png'
-import envImg from '../../assat/departements/enviroment.png'
-import engImg from '../../assat/departements/engineering.png'
-import logImg from '../../assat/departements/logistics.png'
-import itImg from '../../assat/departements/it.png'
-import prodImg from '../../assat/departements/production.png'
-import  rhImg from '../../assat/departements/humanresource.png'
+import maImg from '../../assat/departements/management.webp'
+import mainImg from '../../assat/departements/maintenance.webp'
+import quaImg from '../../assat/departements/quality.webp'
+import secImg from '../../assat/departements/security.webp'
+import envImg from '../../assat/departements/enviroment.webp'
+import engImg from '../../assat/departements/engineering.webp'
+import logImg from '../../assat/departements/logistics.webp'
+import itImg from '../../assat/departements/it.webp'
+import prodImg from '../../assat/departements/production.webp'
+import  rhImg from '../../assat/departements/humanresource.webp'
 
 
 
@@ -42,7 +42,7 @@ const Cards = () => {
       }
       cardsItem();
     }, [])
-    console.log("dapartement1", Departements)
+
     return (
       <>
       <h1 className={css(styles.headerText)}>CHOOSE YOUR <span className={css(styles.headerTextSpan)}>SECTION</span></h1>

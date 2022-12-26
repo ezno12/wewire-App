@@ -1,7 +1,7 @@
 import React from 'react'
 import { StyleSheet, css } from 'aphrodite'
-import logo from '../../assat/wewire.png'
-import logOutIcon from '../../assat/logout.png'
+import logo from '../../assat/wewire.webp'
+import logOutIcon from '../../assat/logout.webp'
 import { Link } from 'react-router-dom'
 
 const styles = StyleSheet.create({
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
 })
 
 export default function NavBar() {
-  const user = JSON.parse(localStorage.getItem('user') as any);
+  // const user = JSON.parse(localStorage.getItem('user') as any);
   
 
   const HandleLogOut = () => {
@@ -54,13 +54,13 @@ export default function NavBar() {
   <div>
     <ul className={css(styles.listStyle)}>
       <li>
-        <Link to={'/Adduser'} className={css(styles.linkStyle)}>Add user</Link>
+        <Link to={'/Adduser'} className={css(styles.linkStyle)}>Users</Link>
       </li>
       <li>
-        <a href="" className={css(styles.linkStyle)} >Profile</a>
+        <Link to={'/profile'} className={css(styles.linkStyle)} >Profile</Link>
       </li>
       <li>
-        <Link to={'/login'} onClick={HandleLogOut} className={css(styles.linkStyle)}> Log Out <img src={logOutIcon} className={css(styles.logOutIconStyle)} /></Link>
+        <Link to={'/login'} onClick={HandleLogOut} className={css(styles.linkStyle)}> Log Out <img src={logOutIcon} alt='logout icon' className={css(styles.logOutIconStyle)} /></Link>
       </li>
     </ul>
   </div>

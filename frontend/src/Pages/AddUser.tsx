@@ -1,11 +1,10 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import { StyleSheet, css } from "aphrodite";
-import { faEnvelope, faLock } from "@fortawesome/free-solid-svg-icons";
 import NavBar from "../Components/NavBar/NavBar";
-
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Popover from "react-bootstrap/Popover";
+import axios, { AxiosResponse } from "axios";
+
 
 const styles = StyleSheet.create({
   formStyle: {
@@ -61,16 +60,87 @@ const styles = StyleSheet.create({
   }
 });
 
-export class AddUser extends Component {
-  render() {
-    return (
+type deprProps = {
+  id : string,
+  title: string
+}
+
+export const AddUser = () => {
+      
+      const user = JSON.parse(localStorage.getItem('user') as any);
+      const [username, setUsername ] = useState<string>();
+      const [email, setEmail ] = useState<string>();
+      const [phone, setPhone ] = useState<string>();
+      const [password, setPassword ] = useState<string>();
+      const [Cpassword, setCPassword ] = useState<string>();
+      const [permission, setPermission] = useState<string>();
+      const [Departements, setDepar] = useState<any[]>();
+      
+      
+      useEffect(() =>{
+        const DeparList = async () => {
+          const res = await fetch("http://localhost:5100/api/v1/DeparList")
+          const data = await res.json()
+          setDepar(data)
+        }
+        DeparList();
+      }, [])
+
+      const handleAddNewUser = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+          if( password === Cpassword) {
+
+            try{
+              axios.post("http://localhost:5100/api/v1/adduser",
+              {
+                permission: permission,
+                username: username,
+                email: email,
+                phone: phone,
+                password: password,
+                isAdmin: false
+              },
+              { headers: {
+                Authorization: `Bearer ${user}` 
+              },
+            })
+              .then((res: AxiosResponse<any>) => {
+                console.log(res.data.message)
+              })
+              
+            }catch(err) {
+              console.log(err)
+            }
+    
+          }
+      }
+
+      const AdminChoose = (item : deprProps) => {
+        return (
+          <div style={{width: '10rem', height: '0.6rem', display: 'block', accentColor: 'red'}}>
+            <input
+              required
+              onChange={() => {setPermission(item.id)}}
+              type="radio"
+              id={item.id}
+            />
+            <label htmlFor={item.id} style={{ padding: 5 }}>
+            {item.title}
+            </label>
+          </div>
+        )
+      }
+
+      return (
       <>
         <NavBar />
-        <form className={css(styles.formStyle)}>
+        <form className={css(styles.formStyle)} onSubmit={handleAddNewUser}>
           <div>
             <label htmlFor="username">User name</label>
             <div>
               <input
+                required onChange={(e)=>setUsername(e.target.value)}
                 type="text"
                 id="username"
                 className={css(styles.inputStyle)}
@@ -82,6 +152,7 @@ export class AddUser extends Component {
             <label htmlFor="email">Mail</label>
             <div>
               <input
+                required onChange={(e)=>setEmail(e.target.value)}
                 type="email"
                 id="email"
                 className={css(styles.inputStyle)}
@@ -93,9 +164,10 @@ export class AddUser extends Component {
             <label htmlFor="phone">Phone number</label>
             <div>
               <input
+                required onChange={(e)=>setPhone(e.target.value)}
                 type="tel"
                 id="phone"
-                pattern="[0-9]{2}-[0-9]{3}-[0-9]{3}"
+                pattern="[0-9]{2}[0-9]{3}[0-9]{3}"
                 className={css(styles.inputStyle)}
               />
             </div>
@@ -105,8 +177,21 @@ export class AddUser extends Component {
             <label htmlFor="pass">Password</label>
             <div>
               <input
+                required onChange={(e)=>setPassword(e.target.value)}
                 type="password"
                 id="pass"
+                className={css(styles.inputStyle)}
+              />
+            </div>
+          </div>
+
+          <div data-validate="Password is required">
+            <label htmlFor="pass">Confirm Password</label>
+            <div>
+              <input
+                required onChange={(e)=>setCPassword(e.target.value)}
+                type="password"
+                id="Cpass"
                 className={css(styles.inputStyle)}
               />
             </div>
@@ -115,8 +200,8 @@ export class AddUser extends Component {
           <Popover id="popover-basic" style={{maxWidth: '21.5rem', paddingBottom: '1rem'}}>
             <Popover.Header as="h3">User Type</Popover.Header>
             <Popover.Body className={css(styles.popoverStyle)}>
-            {deprtList.map((depertementAdmin) =>
-              {return <AdminChoose key={depertementAdmin.id} id={depertementAdmin.id} title={depertementAdmin.title}/> })}
+            {Departements && Departements.map((depertement) =>
+              {return <AdminChoose key={depertement.id} id={depertement.id} title={depertement.title}/> })}
             </Popover.Body>
           </Popover>
 
@@ -128,71 +213,8 @@ export class AddUser extends Component {
         </form>
       </>
     );
-  }
+
 }
-type deprProps = {
-  id : string,
-  title: string
-}
-function AdminChoose(item : deprProps) {
-  return (
-    <div style={{width: '10rem', height: '0.6rem', display: 'block', accentColor: 'red'}}>
-      <input
-        type="checkbox"
-        id={item.id}
-      />
-      <label htmlFor={item.id} style={{ padding: 5 }}>
-      {item.title}
-      </label>
-    </div>
-  )
-}
-
-const deprtList = [ 
-  {
-    id: 'regular',
-    title: 'Regular User'
-  },
-  {
-    id: 'mangement',
-    title: 'Mangement Admin'
-  },
-  {
-    id: 'maintenence',
-    title: 'Maintenence Admin'
-  },
-  {
-    id: 'quality ',
-    title: 'Quality Admin'
-  },
-  {
-    id: 'enviroment',
-    title: 'Enviroment Admin'
-  },
-  {
-    id: 'ie',
-    title: 'IE Admin'
-  },
-  {
-    id: 'logistic',
-    title: 'Logistic Admin'
-  },
-  {
-    id: 'it',
-    title: 'IT Admin'
-  },
-  {
-    id: 'production',
-    title: 'Production Admin'
-  },
-  {
-    id: 'hr',
-    title: 'HR Admin'
-  },
-]
-
-
-
 
 
 export default AddUser;

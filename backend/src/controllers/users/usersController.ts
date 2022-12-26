@@ -2,6 +2,7 @@ import { Response, Request } from "express";
 import  jwt from "jsonwebtoken"
 import { selectUsers, insertUser, verifyLogin, selectUsersByEmail, deleteUserService, selectUsersByUsername, selectUsersByPhone } from "@services/users/users";
 
+
 export async function getUsers(_: Request, response: Response): Promise<any> {
     try {
         const result = await selectUsers();
@@ -97,16 +98,18 @@ export async function login(request: Request, response: Response): Promise<any> 
      });
 
         const result = await verifyLogin(objectLogin);
+
         if (result) {
             const token = jwt.sign(
-                { id: oldUser._id, isAdmin: oldUser.isAdmin },
+                {  isAdmin: oldUser.isAdmin },
                 process.env.ACCESS_TOKEN_SECRET,
                 { expiresIn: "24h" }
               );
             return response.status(200).json({
                 error: false,
-                permissions: {admin: result.isAdmin, perssionlevel: result.permission},
-                token: token
+                token: token,
+                admin: true,
+                permission: result.permission
 
             })
         } else {

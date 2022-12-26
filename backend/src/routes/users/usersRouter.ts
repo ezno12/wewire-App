@@ -5,9 +5,9 @@ import { verifyTokenAndAdmin } from "@services/users/token";
 
 const usersRouter = express.Router();
 
-usersRouter.get("/users", verifyTokenAndAdmin, getUsers);
+usersRouter.get("/users",getUsers);
 
-usersRouter.post("/user", addUser);
+usersRouter.post("/adduser", verifyTokenAndAdmin, addUser);
 
 usersRouter.post("/login", login);
 

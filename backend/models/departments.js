@@ -30,11 +30,6 @@ module.exports = (sequelize, DataTypes) => {
       unique: true,
       type: DataTypes.STRING
     },
-    imgUrl: {
-      allowNull: true,
-      unique: true,
-      type: DataTypes.STRING
-    }
   }, {
     sequelize,
     modelName: 'Departments',

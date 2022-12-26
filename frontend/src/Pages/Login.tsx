@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import Button from 'react-bootstrap/Button';
 import { StyleSheet, css } from 'aphrodite';
-import logo from '../assat/wewire.png'
-import profile from '../assat/add.png'
-import axios from 'axios';
-import { Redirect } from 'react-router-dom';
+import logo from '../assat/wewire.webp'
+import profile from '../assat/add.webp'
+import axios, { AxiosResponse } from 'axios';
+
+
 
 const styles = StyleSheet.create({
     formStyle: {
@@ -58,6 +59,7 @@ const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
+
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
@@ -66,13 +68,15 @@ const Login = () => {
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); 
     try {
-      const res = await axios.post("http://localhost:5100/api/v1/login",
+      const res: AxiosResponse<any> = await axios.post("http://localhost:5100/api/v1/login",
     {
       email: email,
       password: password
     });
+    const token = res.data.token
     // Set JWT on client browser
-    localStorage.setItem("user",JSON.stringify((res).data.token))
+    //localStorage.setItem('access', JSON.stringify(accessToken))
+    localStorage.setItem('user',JSON.stringify(token))
     // redrict to home page after Successed login
     window.location.replace("/");
     } catch(err) {
@@ -108,7 +112,7 @@ const Login = () => {
               </div>
 
               <div>
-                <a href="#" className={css(styles.forgetStyle)}>
+                <a href="/reset" className={css(styles.forgetStyle)}>
                   Forget Password?
                 </a>
               </div>
