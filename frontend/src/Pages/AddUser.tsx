@@ -4,6 +4,7 @@ import { StyleSheet, css } from "aphrodite";
 import NavBar from "../Components/NavBar/NavBar";
 import Popover from "react-bootstrap/Popover";
 import axios, { AxiosResponse } from "axios";
+import { useNavigate } from 'react-router-dom'
 
 
 const styles = StyleSheet.create({
@@ -66,7 +67,7 @@ type deprProps = {
 }
 
 export const AddUser = () => {
-      
+      const navigate = useNavigate()
       const user = JSON.parse(localStorage.getItem('user') as any);
       const [username, setUsername ] = useState<string>();
       const [email, setEmail ] = useState<string>();
@@ -108,7 +109,7 @@ export const AddUser = () => {
               .then((res: AxiosResponse<any>) => {
                 console.log(res.data.message)
               })
-              
+              navigate("/users")
             }catch(err) {
               console.log(err)
             }

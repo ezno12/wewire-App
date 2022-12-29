@@ -1,5 +1,5 @@
 import express from "express";
-import { addUser, getUsers, login, UserByEmail, deleteUser, UserByUsername } from "@controllers/users/usersController";
+import { addUser, getUsers, login, UserByEmail, deleteUser, UserByUsername, updateUser } from "@controllers/users/usersController";
 import { verifyTokenAndAdmin } from "@services/users/token";
 
 
@@ -16,5 +16,7 @@ usersRouter.get("/userByEmail", verifyTokenAndAdmin, UserByEmail);
 usersRouter.get("/userByUsername", UserByUsername);
 
 usersRouter.delete("/user", verifyTokenAndAdmin, deleteUser);
+
+usersRouter.put("/update", updateUser)
 
 export { usersRouter };

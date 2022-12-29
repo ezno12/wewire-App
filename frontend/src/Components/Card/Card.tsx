@@ -35,7 +35,7 @@ const card = ({img, title}: cardProps) => {
   
   return (
     <>
-    <Link to={'/users'} className={css(styles.cardTitleStyle)}>
+    <Link to={'/chart'} className={css(styles.cardTitleStyle)}>
     <Card className={css(styles.cardStyle)}>
       <Card.Img variant="top" className={css(styles.cardImg)} src={img}/>
       <Card.Body>

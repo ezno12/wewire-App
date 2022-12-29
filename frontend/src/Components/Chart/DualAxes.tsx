@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom';
 import { DualAxes } from '@ant-design/plots';
+import { css, StyleSheet } from 'aphrodite'
+
+const styles = StyleSheet.create({
+    chartStyle: {
+        maxWidth: "40rem",
+        marginInline: "auto",
+        margin: '2rem auto 6rem auto'
+    }
+})
 
 const DualAxesChart = () => {
   const data = [
@@ -46,7 +54,7 @@ const DualAxesChart = () => {
       },
     ],
   };
-  return <DualAxes {...config} />;
+  return <DualAxes {...config} className={css(styles.chartStyle)}/>;
 };
 
 export default DualAxesChart;

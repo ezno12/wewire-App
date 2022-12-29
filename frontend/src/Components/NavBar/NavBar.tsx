@@ -44,7 +44,7 @@ export default function NavBar() {
 
   const HandleLogOut = () => {
     localStorage.clear();
-    window.location.reload();
+    
   }
 
   return (
@@ -54,7 +54,7 @@ export default function NavBar() {
   <div>
     <ul className={css(styles.listStyle)}>
       <li>
-        <Link to={'/Adduser'} className={css(styles.linkStyle)}>Users</Link>
+        <Link to={'/users'} className={css(styles.linkStyle)}>Users</Link>
       </li>
       <li>
         <Link to={'/profile'} className={css(styles.linkStyle)} >Profile</Link>

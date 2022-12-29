@@ -1,6 +1,7 @@
 import { Response, Request } from "express";
 import  jwt from "jsonwebtoken"
-import { selectUsers, insertUser, verifyLogin, selectUsersByEmail, deleteUserService, selectUsersByUsername, selectUsersByPhone } from "@services/users/users";
+import { selectUsers, insertUser, verifyLogin, selectUsersByEmail, deleteUserService,
+    selectUsersByUsername, selectUsersByPhone, UpdateUserData } from "@services/users/users";
 
 
 export async function getUsers(_: Request, response: Response): Promise<any> {
@@ -85,7 +86,6 @@ export async function addUser(request: Request, response: Response): Promise<any
 }
 
 export async function login(request: Request, response: Response): Promise<any> {
-    console.log(request, response)
 
     const objectLogin = request.body;
     try {
@@ -135,4 +135,13 @@ export async function deleteUser(request: Request, response: Response): Promise<
     } catch (error) {
         response.json({ error: true, message: "Error while getting users" })
     }
+}
+
+export async function updateUser(request: Request, response: Response): Promise<any> {
+        
+        const UserObject = request.body
+        console.log("befor user obj in controle: ", UserObject)
+        const result = await UpdateUserData(UserObject)
+        console.log("after user obj in controle: ", UserObject)
+    return response.status(200).json(result)
 }

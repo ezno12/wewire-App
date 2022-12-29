@@ -4,6 +4,8 @@ import { StyleSheet, css } from 'aphrodite';
 import logo from '../assat/wewire.webp'
 import profile from '../assat/add.webp'
 import axios, { AxiosResponse } from 'axios';
+import { useNavigate, useLocation } from 'react-router-dom'
+
 
 
 
@@ -14,7 +16,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: '2rem',
         'margin-inline': 'auto',
-        padding: '2rem'
+        padding: '0.7rem'
     },
     rembermeStyle: {
         display: 'flex',
@@ -58,6 +60,9 @@ const styles = StyleSheet.create({
 const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
 
 
   useEffect(() => {
@@ -77,8 +82,10 @@ const Login = () => {
     // Set JWT on client browser
     //localStorage.setItem('access', JSON.stringify(accessToken))
     localStorage.setItem('user',JSON.stringify(token))
-    // redrict to home page after Successed login
-    window.location.replace("/");
+    // redrict to home or desired page after Successed login
+    navigate(from, { replace: false });
+    
+   
     } catch(err) {
       console.log("error: ", err)
     }

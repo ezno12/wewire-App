@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Form, Input, InputNumber, Popconfirm, Table, Typography, Button } from 'antd';
 import axios from 'axios';
 import {Link } from 'react-router-dom'
+import {useAppDispatch, useAppSelector} from "../../Redux/ReduxHooks";
+import UserRedux from '../../Redux/UserRedux';
+import { type } from 'os';
 
 
 interface Item {
@@ -58,17 +61,20 @@ const EditableCell: React.FC<EditableCellProps> = ({
 };
 
 const App: React.FC = () => {
-  const userData: Item[] = []
+  
   const [form] = Form.useForm();
-  const [data, setData] = useState(userData);
+  const [data, setData] = useState<Item[]>([]);
   const [editingKey, setEditingKey] = useState('');
-  const [count, setCount] = useState(data.length)
+  const [count, setCount] = useState(data.length);
+  //const dispatch = useAppDispatch()
 
+
+  
 
   useEffect(() => {
+    const userData: Item[] = []
     const getUsers = async () => {
       const res = await axios.get("http://localhost:5100/api/v1/users")
-      
       res.data.map(({id, username, phone, email}: any) =>
         userData.push(
           { key: id,
@@ -76,10 +82,11 @@ const App: React.FC = () => {
             email: email,
             phone: phone,
       }))
-      setData(userData)
+      //dispatch()
+      setData(userData as any)
     }
     getUsers();
-  }, [userData])
+  },[])
 
   const isEditing = (record: Item) => record.key === editingKey;
 
@@ -105,27 +112,57 @@ const App: React.FC = () => {
   };
 
   //Handle Delet user
-  const handleDelete = (key: React.Key) => {
-    const newData = data.filter((item) => item.key !== key);
-    setData(newData);
+  const handleDelete = async (key: React.Key) => {
+    const user = JSON.parse(localStorage.getItem('user') as any);
+    const deletedUser: any = data.filter((item) => item.key === key)
+    console.log(deletedUser[0].username)
+    try {
+      const res = await axios.delete(`http://localhost:5100/api/v1/user?username=${deletedUser[0].username}`,
+      { headers: {
+        Authorization: `Bearer ${user}` 
+      }})
+      if(res) {
+        const newData = data.filter((item) => item.key !== key);
+        setData(newData);
+      }
+} catch(err) {
+
+}
+    
   };
 
   //Handle Save user
   const save = async (key: React.Key) => {
     try {
       const row = (await form.validateFields()) as Item;
-
+      console.log("row is:", row)
+      
       const newData = [...data];
-      console.log(newData)
       const index = newData.findIndex((item) => key === item.key);
+
       if (index > -1) {
         const item = newData[index];
-        newData.splice(index, 1, {
-          ...item,
-          ...row,
+          
+        const res = await axios.put("http://localhost:5100/api/v1/update",{
+          id: Number(item.key),
+          username: row.username,
+          email: row.email,
+          phone: row.phone
         });
-        setData(newData);
-        setEditingKey('');
+          
+        if (res.data.username === row.username) {
+          newData.splice(index, 1, {
+            ...item,
+            ...row,
+          });
+          
+          setData(newData);
+          setEditingKey('');
+          console.log("Success to uapdte usre")
+        } else {
+          console.log("Failed to update user")
+        }
+
       } else {
         newData.push(row);
         setData(newData);
@@ -142,6 +179,7 @@ const App: React.FC = () => {
       dataIndex: 'username',
       width: '27%',
       editable: true,
+      
     },
     {
       title: 'Email',
@@ -159,25 +197,28 @@ const App: React.FC = () => {
       title: 'Actions',
       render: (_: any, record: Item) => {
         const editable = isEditing(record);
-        return editable ? (
-          <>
+        return <div style={{ display: 'flex', justifyContent: 'center'}}>
+          {editable ? (
+          <div>
             <Typography.Link onClick={() => save(record.key)} style={{ marginRight: 8}}>
               Save
             </Typography.Link>
             <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
               <a>Cancel</a>
             </Popconfirm>
-          </>
+          </div>
         ) : (
-          <>
-          <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)} style={{ marginRight: 8}}>
+          <div>
+          <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)} style={{ marginRight: '2rem'}}>
             Edit
           </Typography.Link>
           <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
             <Typography.Link>Delete</Typography.Link>
           </Popconfirm>
-        </>
-        );
+        </div>
+        
+        )
+      }</div>
       },
     },
   ];
@@ -194,14 +235,17 @@ const App: React.FC = () => {
         dataIndex: col.dataIndex,
         title: col.title,
         editing: isEditing(record),
+        
       }),
     };
   });
 
   return (
-    <div style={{maxWidth: '50rem', margin: '2rem 2rem'}}>
+    <div style={{maxWidth: '70rem', marginInline: 'auto', marginBottom: '6rem'}}>
     <Form form={form} component={false}>
-       <Link to='/Adduser'><Button onClick={handleAdd} type="primary" style={{ marginBottom: 16, backgroundColor: 'red'}}>Add New User</Button></Link>
+       <Link to='/Adduser'>
+        <Button onClick={handleAdd} type="primary" style={{ marginBottom: 16, backgroundColor: 'red'}}>Add New User</Button>
+        </Link>
       <Table
         components={{
           body: {
@@ -213,6 +257,7 @@ const App: React.FC = () => {
         columns={mergedColumns}
         rowClassName="editable-row"
         pagination={false}
+        
       />
     </Form>
     </div>

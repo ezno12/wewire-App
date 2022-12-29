@@ -1,117 +1,145 @@
 import React, { useState, useEffect } from 'react';
 import { Column } from '@ant-design/plots';
+import { css, StyleSheet } from 'aphrodite'
+
+const styles = StyleSheet.create({
+    chartStyle: {
+        maxWidth: "40rem",
+        marginInline: "auto",
+        margin: '2rem auto 6rem auto'
+    }
+})
 
 const DemoColumn = () => {
   const data = [
     {
       name: 'London',
-      月份: 'Jan.',
-      月均降雨量: 18.9,
+      axeX: 'Jan.',
+      axeY: 18.9,
     },
     {
       name: 'London',
-      月份: 'Feb.',
-      月均降雨量: 28.8,
+      axeX: 'Feb.',
+      axeY: 28.8,
     },
     {
       name: 'London',
-      月份: 'Mar.',
-      月均降雨量: 39.3,
+      axeX: 'Mar.',
+      axeY: 39.3,
     },
     {
       name: 'London',
-      月份: 'Apr.',
-      月均降雨量: 81.4,
+      axeX: 'Apr.',
+      axeY: 81.4,
     },
     {
       name: 'London',
-      月份: 'May',
-      月均降雨量: 47,
+      axeX: 'May',
+      axeY: 47,
     },
     {
       name: 'London',
-      月份: 'Jun.',
-      月均降雨量: 20.3,
+      axeX: 'Jun.',
+      axeY: 20.3,
     },
     {
       name: 'London',
-      月份: 'Jul.',
-      月均降雨量: 24,
+      axeX: 'Jul.',
+      axeY: 24,
     },
     {
       name: 'London',
-      月份: 'Aug.',
-      月均降雨量: 35.6,
+      axeX: 'Aug.',
+      axeY: 35.6,
     },
     {
       name: 'Berlin',
-      月份: 'Jan.',
-      月均降雨量: 12.4,
+      axeX: 'Jan.',
+      axeY: 12.4,
     },
     {
       name: 'Berlin',
-      月份: 'Feb.',
-      月均降雨量: 23.2,
+      axeX: 'Feb.',
+      axeY: 23.2,
     },
     {
       name: 'Berlin',
-      月份: 'Mar.',
-      月均降雨量: 34.5,
+      axeX: 'Mar.',
+      axeY: 34.5,
     },
     {
       name: 'Berlin',
-      月份: 'Apr.',
-      月均降雨量: 99.7,
+      axeX: 'Apr.',
+      axeY: 99.7,
     },
     {
       name: 'Berlin',
-      月份: 'May',
-      月均降雨量: 52.6,
+      axeX: 'May',
+      axeY: 52.6,
     },
     {
       name: 'Berlin',
-      月份: 'Jun.',
-      月均降雨量: 35.5,
+      axeX: 'Jun.',
+      axeY: 35.5,
     },
     {
       name: 'Berlin',
-      月份: 'Jul.',
-      月均降雨量: 37.4,
+      axeX: 'Jul.',
+      axeY: 37.4,
     },
     {
       name: 'Berlin',
-      月份: 'Aug.',
-      月均降雨量: 42.4,
+      axeX: 'Aug.',
+      axeY: 42.4,
     },
+    {
+      name: 'Tunisia',
+      axeX: 'Aug.',
+      axeY: 35.6,
+    },
+    {
+      name: 'Tunisia',
+      axeX: 'Apr.',
+      axeY: 35.6,
+    },
+    {
+      name: 'Tunisia',
+      axeX: 'Mar.',
+      axeY: 35.6,
+    },
+    {
+      name: 'Tunisia',
+      axeX: 'Feb.',
+      axeY: 35.6,
+    }
   ];
   const config = {
     data,
     isGroup: true,
-    xField: '月份',
-    yField: '月均降雨量',
+    xField: 'axeX',
+    yField: 'axeY',
     seriesField: 'name',
 
-    /** 设置颜色 */
+   
     //color: ['#1ca9e6', '#f88c24'],
 
-    /** 设置间距 */
     // marginRatio: 0.1,
     label: {
       layout: [
-        // 柱形图数据标签位置自动调整
+
         {
           type: 'interval-adjust-position',
-        }, // 数据标签防遮挡
+        }, 
         {
           type: 'interval-hide-overlap',
-        }, // 数据标签文颜色自动调整
+        },
         {
           type: 'adjust-color',
         },
       ],
     },
   };
-  return <Column {...config} />;
+  return <Column {...config}  className={css(styles.chartStyle)}/>;
 };
 
 export default DemoColumn;
