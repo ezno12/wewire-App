@@ -53,26 +53,7 @@ const AnnoLine = () => {
           },
         },
         style: {
-          lineDash: [4, 4],
-        },
-      },
-      {
-        type: 'line',
-
-        start: ['min', averageValue],
-
-        end: ['max', averageValue],
-        text: {
-          content: 'Benfits Moyen',
-          position: 'right',
-          offsetY: -6,
-          style: {
-            textAlign: 'right',
-          },
-        },
-        style: {
-          lineDash: [4, 4],
-          stroke: 'lightblue',
+          stroke: 'blue',
         },
       },
     ],

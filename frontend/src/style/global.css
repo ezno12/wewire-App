@@ -1,36 +1,85 @@
+/* CSS to override React-Bootstrap Style*/
+.nav {
+    align-items: center;
+}
+.nav-justified .nav-item, .nav-justified > .nav-link {
+    display: flex;
+}
+.nav-tabs .nav-item {
+    margin: 0 0 0 2px;
+}
+.nav-item .nav-link:hover {
+    color: white !important;
+    background-color: red;
+}
 
+button[id^="noanim-tab-example-tab-"]:hover {
+    border-radius: 8px 0;
+    border: 0;
+}
 
-/* CSS to override antd library Component*/ 
-
-/* CSS to override antd library Component: button style*/ 
-.ant-tabs-tab {
-    padding: 12px 24px !important;
-    border-radius: 0px !important;
-    font-size: 1rem;
+.nav-tabs .nav-link {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 0.8rem;
+    color: rgba(0, 0, 0, 0.88);
     font-style: normal;
-    font-family: 'Roboto, sans-serif , monospace' !important;
+    background-color: rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(5, 5, 5, 0.06);
+    border-radius: 0%;
+    margin: 0.15rem 0;
+}
+/* Update data button Style: tab 0 */
+
+.nav-item:first-child button, .nav-item:last-child button{
+    margin: 0 1rem;
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.88);
+    height: 40px;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    background-color: #ffffff;
+    border-color: #d9d9d9;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.02);
+}
+.nav-item:last-child button {
+    border-radius: 0px;
+    margin: 0 2px;
 }
 
-.ant-tabs-tab:hover {
-    background-color: red !important;
+.nav-item:first-child button:hover, .nav-item:last-child button:hover {
     color: white !important;
-    border-radius: 8px 0!important;
+    background-color: red ;
+    border-color: red ;
 }
 
-/* CSS to override antd library Component: button text style*/ 
-.ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
-    color: red !important;
-    
+.nav-item:first-child button:active, .nav-item:last-child button:active {
+    outline: 3px solid #ff7676;
+    transition: outline-offset 0s,outline 0s;
 }
 
-.ant-tabs .ant-tabs-tab-btn:focus {
-    color: red !important;
+.nav-tabs .nav-link.active {
+    color: red;
+    border-color: #d9d9d9;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.02);
 }
-.ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn:hover{
-    color: white !important;
+.nav-tabs .nav-link.active span{
+    color: black;
 }
 
-/* CSS to override antd library Component: Plus Span to add new tab*/ 
-.ant-tabs > .ant-tabs-nav .ant-tabs-nav-add:hover {
-    color: red !important;
+/* Add New Tab BUtton */
+#noanim-tab-example-tab-null {
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.88);
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.02);
+}
+
+/* Title in upde chart data table*/
+.ant-collapse-header-text {
+    font-weight: bolder;
+}
+.ant-collapse-header-text:active {
+    color: rgba(255, 0, 0, 0.88);
 }

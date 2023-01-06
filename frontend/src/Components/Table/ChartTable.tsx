@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Input, InputNumber, Popconfirm, Table, Typography, Button } from 'antd';
 import axios from 'axios';
-import {Link } from 'react-router-dom'
 
 
 interface Item {
   key: string;
-  username: string;
-  email: string;
-  phone: string;
+  axeY: string;
+  axeX: string;
+  name: string;
 }
 
 
@@ -57,35 +56,35 @@ const EditableCell: React.FC<EditableCellProps> = ({
   );
 };
 
-const UsersTable: React.FC = () => {
+const ChartsTable: React.FC = (chartData: any) => {
   
   const [form] = Form.useForm();
   const [data, setData] = useState<Item[]>([]);
   const [editingKey, setEditingKey] = useState('');
   const [count, setCount] = useState(data.length);
-
+  const [Type, tableData]: any = Object.values(chartData)
 
   useEffect(() => {
-    const userData: Item[] = []
-    const getUsers = async () => {
-      const res = await axios.get("http://localhost:5100/api/v1/users")
-      res.data.map(({id, username, phone, email}: any) =>
-        userData.push(
-          { key: id,
-            username: username,
-            email: email,
-            phone: phone,
-      }))
-      //dispatch()
-      setData(userData as any)
+    const getChartsData = async () => {
+      const newData: Item[] = []
+      
+      tableData.map(({id, xField, yField, zField}: any) => {
+          newData.push({
+                key: id,
+                axeY: xField,
+                axeX: yField,
+                name: zField,
+    })
+    setData(newData)
+  })
     }
-    getUsers();
+    getChartsData();
   },[])
-
+  
   const isEditing = (record: Item) => record.key === editingKey;
 
   const edit = (record: Partial<Item> & { key: React.Key }) => {
-    form.setFieldsValue({ username: '', email: '', phone: '', ...record });
+    form.setFieldsValue({ axeY: '', axeX: '', name: '', ...record });
     setEditingKey(record.key);
   };
 
@@ -93,25 +92,24 @@ const UsersTable: React.FC = () => {
     setEditingKey('');
   };
 
-  // handle add a new user
   const handleAdd = () => {
     const newData: Item = {
       key: count.toString(),
-      username: 'Default Username',
-      phone: 'Default Phone',
-      email: 'Default Email',
+      axeY: 'Default axeY',
+      name: 'Default name',
+      axeX: 'Default axeX',
     };
     setData([...data, newData]);
     setCount(count + 1);
   };
 
-  //Handle Delet user
+  //Handle Delete data Column
   const handleDelete = async (key: React.Key) => {
     const user = JSON.parse(localStorage.getItem('user') as any);
     const deletedUser: any = data.filter((item) => item.key === key)
-    console.log(deletedUser[0].username)
+    console.log(deletedUser[0].axeY)
     try {
-      const res = await axios.delete(`http://localhost:5100/api/v1/user?username=${deletedUser[0].username}`,
+      const res = await axios.delete(`http://localhost:5100/api/v1/user?axeY=${deletedUser[0].axeY}`,
       { headers: {
         Authorization: `Bearer ${user}` 
       }})
@@ -125,7 +123,7 @@ const UsersTable: React.FC = () => {
     
   };
 
-  //Handle Save user
+  //Handle Save Chart Data
   const save = async (key: React.Key) => {
     try {
       const row = (await form.validateFields()) as Item;
@@ -139,12 +137,12 @@ const UsersTable: React.FC = () => {
           
         const res = await axios.put("http://localhost:5100/api/v1/update",{
           id: Number(item.key),
-          username: row.username,
-          email: row.email,
-          phone: row.phone
+          axeY: row.axeY,
+          axeX: row.axeX,
+          name: row.name
         });
           
-        if (res.data.username === row.username) {
+        if (res.data.axeY === row.axeY) {
           newData.splice(index, 1, {
             ...item,
             ...row,
@@ -167,23 +165,24 @@ const UsersTable: React.FC = () => {
     }
   };
 
+
   const columns = [
     {
-      title: 'Username',
-      dataIndex: 'username',
+      title: 'Axe Y',
+      dataIndex: 'axeY',
       width: '27%',
       editable: true,
       
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
+      title: 'Axe X',
+      dataIndex: 'axeX',
       width: '30%',
       editable: true,
     },
     {
-      title: 'Phone',
-      dataIndex: 'phone',
+      title: 'Name',
+      dataIndex: 'name',
       width: '27%',
       editable: true,
     },
@@ -217,6 +216,18 @@ const UsersTable: React.FC = () => {
     },
   ];
 
+  //Check The Chart Type to return correspond Table Type
+  if ( Type === 'pie' || Type === 'rose') {
+    columns.splice(2,1)
+    columns[0].title = 'Type'
+    columns[1].title = 'Value'
+    columns.map((items) => {
+      return (items.width = '40%'
+      )
+    })
+  }
+
+
   const mergedColumns = columns.map((col) => {
     if (!col.editable) {
       return col;
@@ -225,7 +236,7 @@ const UsersTable: React.FC = () => {
       ...col,
       onCell: (record: Item) => ({
         record,
-        inputType: col.dataIndex === 'email' && 'text',
+        inputType: col.dataIndex === 'axeX' && 'text',
         dataIndex: col.dataIndex,
         title: col.title,
         editing: isEditing(record),
@@ -235,11 +246,8 @@ const UsersTable: React.FC = () => {
   });
 
   return (
-    <div style={{maxWidth: '70rem', marginInline: 'auto', marginBottom: '6rem'}}>
+    <div style={{maxWidth: '70rem', marginInline: 'auto', marginBottom: '.5rem'}}>
     <Form form={form} component={false}>
-       <Link to='/Adduser'>
-        <Button onClick={handleAdd} type="primary" style={{ marginBottom: 16, backgroundColor: 'red'}}>Add New User</Button>
-        </Link>
       <Table
         components={{
           body: {
@@ -258,6 +266,6 @@ const UsersTable: React.FC = () => {
   );
 };
 
-export default UsersTable;
+export default ChartsTable;
 
 

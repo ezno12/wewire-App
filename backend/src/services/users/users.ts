@@ -91,10 +91,7 @@ export async function verifyLogin(objectLogin: LoginType) {
 export async function UpdateUserData(UserObject) {
     console.log("user obj in service: ", UserObject)
     try {
-        let userToUpdate = await User.findOne({
-            where: {
-                id: UserObject.id
-            }})
+        let userToUpdate = await User.findByPk(UserObject.id)
             console.log("usr to update: ", userToUpdate)
         const uptedUser = await userToUpdate.set({
                 username: UserObject.username,
