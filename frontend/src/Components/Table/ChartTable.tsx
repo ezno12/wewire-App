@@ -57,17 +57,20 @@ const EditableCell: React.FC<EditableCellProps> = ({
   );
 };
 
-const ChartsTable: React.FC = (chartData: any) => {
-  
+const ChartsTable: React.FC<{ChartData: any, lastId: any}> = ({ ChartData, lastId }) => {
+
   const [form] = Form.useForm();
   const [data, setData] = useState<Item[]>([]);
   const [editingKey, setEditingKey] = useState('');
-  const [count, setCount] = useState(77);
-  //const [ DataId, setDataId] = useState()
-  const dataList: any = Object.values(chartData)
+  const [count, setCount] = useState(lastId + 1);
+  const [newAdd, setNewAdd] = useState<boolean>();
+  const [saveAction, setSaveAction] = useState<boolean>();
+  // Get Data for Each Table
+  const dataList: any = Object.values(ChartData)
   const Type = dataList[0]
   const tableData = dataList[4]
   const DataId = tableData[0].dataId
+  
 
   useEffect(() => {
     const getChartsData = async () => {
@@ -87,13 +90,12 @@ const ChartsTable: React.FC = (chartData: any) => {
     }
     getChartsData();
   }, [tableData])
-  
+
   const isEditing = (record: Item) => record.key === editingKey;
 
   const edit = (record: Partial<Item> & { key: React.Key }) => {
     form.setFieldsValue({ dataId: '', xField: '', yField: '', zField: '', ...record });
     setEditingKey(record.key);
-    console.log("data in edit: ",data)
   };
 
   const cancel = () => {
@@ -122,6 +124,7 @@ const ChartsTable: React.FC = (chartData: any) => {
 
   // handle add a new chart row
   const handleAdd = () => {
+    console.log("new add before add", newAdd)
     const newData: Item = {
       key: count.toString(),
       xField: 'Default Data',
@@ -131,38 +134,50 @@ const ChartsTable: React.FC = (chartData: any) => {
     };
     setData([newData, ...data]);
     setCount(count + 1);
+    setNewAdd(true)
+    console.log("new add after add", newAdd)
   };
   
   //Handle Save Chart Data
   const save = async (key: React.Key) => {
+    
+    console.log("new add in save", newAdd)
     try {
       const row = (await form.validateFields()) as Item;
 
       const newData = [...data];
       const index = newData.findIndex((item) => key === item.key);
-      
+
       if (index > -1) {
         const item = newData[index];
-        if (row.zField === undefined ) row.zField = '0'
-        
-        //save the updated row of chart
-        const updateResult = await axios.put("http://localhost:5100/api/v1/updatechart",{
+        if (row.zField === undefined ) row.zField = '0';
+        console.log("add before update ", newAdd)
+        if(!newAdd) {
+          //save the updated row of chart
+         const updateResult = await axios.put("http://localhost:5100/api/v1/updatechart",{
           id: Number(item.key),
           xField: row.xField,
           yField: row.yField,
           zField: row.zField,
           dataId: row.dataId
         });
-        // save the created row of chart
-        const createResult = await axios.post("http://localhost:5100/api/v1/addrowchart", {
-          id: 79,
+        updateResult.data && setSaveAction(true)
+      } else {
+          // save the created row of chart
+          const createResult = await axios.post("http://localhost:5100/api/v1/addrowchart", {
+          
+          id: Number(item.key),
           xField: row.xField,
           yField: row.yField,
           zField: row.zField,
           dataId: item.dataId
         })
+        createResult.data && setSaveAction(true)
+        setNewAdd(false)
+        }
+        
           
-        if (updateResult.data.res.xField === row.xField || createResult.data.result.xField === row.xField) {
+        if (saveAction) {
           newData.splice(index, 1, {
             ...item,
             ...row,

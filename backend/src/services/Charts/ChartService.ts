@@ -53,8 +53,9 @@ export async function UpdateChart(chartObj){
         console.log(err)
     }
 }
-// add new row to chart
+// dd new row to chart
 export async function addChartRow(rowObj){
+    console.log("row obj: ", rowObj)
     try {
         return await ChartData.create({
             id: Number(rowObj.id),

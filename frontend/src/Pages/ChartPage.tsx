@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import "../style/global.css"
 import Tab from 'react-bootstrap/Tab';
@@ -31,15 +31,27 @@ const styles = StyleSheet.create({
 
 const ChartPage = () => {
     const [items, setItems] = useState<any[]>([]);
+    const [lastId, setLastId] = useState(0);
 
     useEffect(()=> {
         const getData = async () => {
+            let newId: number = 0
             const res = await axios("http://localhost:5100/api/v1/chart/")
             setItems(res.data.data)
+
+            // get last chartData id to pass it to table as key for add new row
+            res.data.data.map((chart: any) =>  {
+              chart.ChartData.map(({ id }: any) => {
+                  if( newId <= id) newId = id
+                  return newId
+              })
+              return newId
+          })
+          setLastId(newId)
         }
         getData()
+        
     }, [])
-
 
     return (
     <>
@@ -50,14 +62,17 @@ const ChartPage = () => {
       id="noanim-tab-example"
       className={css(styles.tabsStyle)} 
     >
+      {/* Button to update chart data*/}
       <Tab title="Update Data" eventKey='update'>
-      <ChartUpdate {...items as any}/>
+      <ChartUpdate items={items} lastId={lastId} />
+      
+      {/* Charts */}
       </Tab>
       
       { items.map(({id, title, Type, ChartData})=> {
         const CompChartList: any = {
-            'pie': <PieChart dataItem={ChartData} />,
-            'rose': <RoseChart  dataItem={ChartData} />,
+            'pie': <PieChart dataItem={ChartData}/>,
+            'rose': <RoseChart  dataItem={ChartData}/>,
             'col': <ColChart dataItem={ChartData}/>
           }
           

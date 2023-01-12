@@ -11,17 +11,16 @@ const styles = StyleSheet.create({
     }
 })
 
-const ChartUpdate: React.FC = (items: any) => {
+const ChartUpdate: React.FC<{items: any, lastId: any}> = ({items, lastId}) => {
   
   const dataToUdapte = Object.values(items)
-
 
   return  (
             <Collapse className={css(styles.CollapseContainer)}>
               {dataToUdapte.map(({id, title, ...ChartData}: any)=> {
                 return (
                   <Panel header={title} key={id}>
-                    <ChartTable {...ChartData as any}/>
+                    <ChartTable ChartData={ChartData} lastId={lastId}/>
                   </Panel>
                 )
               })}
