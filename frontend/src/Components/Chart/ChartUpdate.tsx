@@ -18,7 +18,7 @@ const ChartUpdate: React.FC = (items: any) => {
 
   return  (
             <Collapse className={css(styles.CollapseContainer)}>
-              {dataToUdapte.map(({id, title, ChartData}: any)=> {
+              {dataToUdapte.map(({id, title, ...ChartData}: any)=> {
                 return (
                   <Panel header={title} key={id}>
                     <ChartTable {...ChartData as any}/>

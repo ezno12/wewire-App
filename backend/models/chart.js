@@ -4,15 +4,10 @@ const {
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Chart extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
       // define association here
       Chart.hasMany(models.ChartData, {
-        foreignKey: 'dataId'
+        foreignKey: 'dataId',
       })
     }
   }
@@ -23,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING
     },
     title: {
+      unique: true,
       allowNull: false,
       type: DataTypes.STRING
     },
@@ -39,4 +35,6 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'Chart',
   });
   return Chart;
+
+  
 };

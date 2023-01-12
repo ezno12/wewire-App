@@ -69,14 +69,15 @@ const UsersTable: React.FC = () => {
     const userData: Item[] = []
     const getUsers = async () => {
       const res = await axios.get("http://localhost:5100/api/v1/users")
-      res.data.map(({id, username, phone, email}: any) =>
+      res.data.map(({id, username, phone, email}: any) => {
         userData.push(
           { key: id,
             username: username,
             email: email,
             phone: phone,
-      }))
-      //dispatch()
+      })
+      return userData
+    })
       setData(userData as any)
     }
     getUsers();
@@ -198,7 +199,7 @@ const UsersTable: React.FC = () => {
               Save
             </Typography.Link>
             <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-              <a>Cancel</a>
+              <a href='#cancel' onClick={(e) => e.preventDefault()}>Cancel</a>
             </Popconfirm>
           </div>
         ) : (

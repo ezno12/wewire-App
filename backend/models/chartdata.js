@@ -11,6 +11,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      ChartData.belongsTo(models.Chart, {
+        foreignKey: 'dataId'
+      })
     }
   }
   ChartData.init({
@@ -23,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING
     },
     zField: {
-      allowNull: false,
+      allowNull: true,
       type: DataTypes.STRING
     }
   }, {

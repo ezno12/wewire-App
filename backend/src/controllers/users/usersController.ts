@@ -140,8 +140,6 @@ export async function deleteUser(request: Request, response: Response): Promise<
 export async function updateUser(request: Request, response: Response): Promise<any> {
         
         const UserObject = request.body
-        console.log("befor user obj in controle: ", UserObject)
         const result = await UpdateUserData(UserObject)
-        console.log("after user obj in controle: ", UserObject)
     return response.status(200).json(result)
 }

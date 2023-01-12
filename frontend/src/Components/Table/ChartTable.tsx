@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, InputNumber, Popconfirm, Table, Typography, Button } from 'antd';
+import { Form, Input, InputNumber, Popconfirm, Table, Typography, Button} from 'antd';
 import axios from 'axios';
 
 
 interface Item {
   key: string;
-  axeY: string;
-  axeX: string;
-  name: string;
+  xField: string;
+  yField: string;
+  zField: string;
+  dataId: string;
 }
 
 
@@ -61,88 +62,107 @@ const ChartsTable: React.FC = (chartData: any) => {
   const [form] = Form.useForm();
   const [data, setData] = useState<Item[]>([]);
   const [editingKey, setEditingKey] = useState('');
-  const [count, setCount] = useState(data.length);
-  const [Type, tableData]: any = Object.values(chartData)
+  const [count, setCount] = useState(77);
+  //const [ DataId, setDataId] = useState()
+  const dataList: any = Object.values(chartData)
+  const Type = dataList[0]
+  const tableData = dataList[4]
+  const DataId = tableData[0].dataId
 
   useEffect(() => {
     const getChartsData = async () => {
       const newData: Item[] = []
-      
-      tableData.map(({id, xField, yField, zField}: any) => {
+      tableData.map(({id, xField, yField, zField, dataId}: any) => {
           newData.push({
                 key: id,
-                axeY: xField,
-                axeX: yField,
-                name: zField,
+                xField: xField,
+                yField: yField,
+                zField: zField,
+                dataId: dataId
     })
-    setData(newData)
+    
+    return newData
   })
+  setData(newData)
     }
     getChartsData();
-  },[])
+  }, [tableData])
   
   const isEditing = (record: Item) => record.key === editingKey;
 
   const edit = (record: Partial<Item> & { key: React.Key }) => {
-    form.setFieldsValue({ axeY: '', axeX: '', name: '', ...record });
+    form.setFieldsValue({ dataId: '', xField: '', yField: '', zField: '', ...record });
     setEditingKey(record.key);
+    console.log("data in edit: ",data)
   };
 
   const cancel = () => {
     setEditingKey('');
   };
 
-  const handleAdd = () => {
-    const newData: Item = {
-      key: count.toString(),
-      axeY: 'Default axeY',
-      name: 'Default name',
-      axeX: 'Default axeX',
-    };
-    setData([...data, newData]);
-    setCount(count + 1);
-  };
-
   //Handle Delete data Column
   const handleDelete = async (key: React.Key) => {
     const user = JSON.parse(localStorage.getItem('user') as any);
-    const deletedUser: any = data.filter((item) => item.key === key)
-    console.log(deletedUser[0].axeY)
-    try {
-      const res = await axios.delete(`http://localhost:5100/api/v1/user?axeY=${deletedUser[0].axeY}`,
-      { headers: {
-        Authorization: `Bearer ${user}` 
-      }})
-      if(res) {
-        const newData = data.filter((item) => item.key !== key);
-        setData(newData);
-      }
-} catch(err) {
+    const deletedChartRow: any = data.filter((item) => item.key === key)
 
-}
+    try {
+      const res = await axios.delete(`http://localhost:5100/api/v1/deletechartrow?id=${deletedChartRow[0].key}`,
+        { headers: {
+          Authorization: `Bearer ${user}` 
+        }})
+        if(res) {
+          const newData = data.filter((item) => item.key !== key);
+          setData(newData);
+        }
+      } catch(err) {
+        console.log(err)
+      }
     
   };
 
+  // handle add a new chart row
+  const handleAdd = () => {
+    const newData: Item = {
+      key: count.toString(),
+      xField: 'Default Data',
+      yField: 'Default Data',
+      zField: 'Default Data',
+      dataId: DataId
+    };
+    setData([newData, ...data]);
+    setCount(count + 1);
+  };
+  
   //Handle Save Chart Data
   const save = async (key: React.Key) => {
     try {
       const row = (await form.validateFields()) as Item;
-      console.log("row is:", row)
-      
+
       const newData = [...data];
       const index = newData.findIndex((item) => key === item.key);
-
+      
       if (index > -1) {
         const item = newData[index];
-          
-        const res = await axios.put("http://localhost:5100/api/v1/update",{
+        if (row.zField === undefined ) row.zField = '0'
+        
+        //save the updated row of chart
+        const updateResult = await axios.put("http://localhost:5100/api/v1/updatechart",{
           id: Number(item.key),
-          axeY: row.axeY,
-          axeX: row.axeX,
-          name: row.name
+          xField: row.xField,
+          yField: row.yField,
+          zField: row.zField,
+          dataId: row.dataId
         });
+        // save the created row of chart
+        const createResult = await axios.post("http://localhost:5100/api/v1/addrowchart", {
+          id: 79,
+          xField: row.xField,
+          yField: row.yField,
+          zField: row.zField,
+          dataId: item.dataId
+        })
           
-        if (res.data.axeY === row.axeY) {
+        if (updateResult.data.res.xField === row.xField || createResult.data.result.xField === row.xField) {
           newData.splice(index, 1, {
             ...item,
             ...row,
@@ -150,9 +170,9 @@ const ChartsTable: React.FC = (chartData: any) => {
           
           setData(newData);
           setEditingKey('');
-          console.log("Success to uapdte usre")
+          console.log("Success to uapdte Chart data")
         } else {
-          console.log("Failed to update user")
+          console.log("Failed to update chart data")
         }
 
       } else {
@@ -168,21 +188,21 @@ const ChartsTable: React.FC = (chartData: any) => {
 
   const columns = [
     {
+      title: 'Axe X',
+      dataIndex: 'xField',
+      width: '30%',
+      editable: true,
+    },
+    {
       title: 'Axe Y',
-      dataIndex: 'axeY',
+      dataIndex: 'yField',
       width: '27%',
       editable: true,
       
     },
     {
-      title: 'Axe X',
-      dataIndex: 'axeX',
-      width: '30%',
-      editable: true,
-    },
-    {
       title: 'Name',
-      dataIndex: 'name',
+      dataIndex: 'zField',
       width: '27%',
       editable: true,
     },
@@ -197,7 +217,7 @@ const ChartsTable: React.FC = (chartData: any) => {
               Save
             </Typography.Link>
             <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-              <a>Cancel</a>
+              <a href='#cancel' onClick={(e) => e.preventDefault()}>Cancel</a> 
             </Popconfirm>
           </div>
         ) : (
@@ -248,6 +268,7 @@ const ChartsTable: React.FC = (chartData: any) => {
   return (
     <div style={{maxWidth: '70rem', marginInline: 'auto', marginBottom: '.5rem'}}>
     <Form form={form} component={false}>
+    <Button onClick={handleAdd} type="primary" style={{ marginBottom: 16, backgroundColor: 'red'}}>Add New Row</Button>
       <Table
         components={{
           body: {

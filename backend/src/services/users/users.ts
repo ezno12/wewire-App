@@ -89,20 +89,17 @@ export async function verifyLogin(objectLogin: LoginType) {
     }
 }
 export async function UpdateUserData(UserObject) {
-    console.log("user obj in service: ", UserObject)
     try {
         let userToUpdate = await User.findByPk(UserObject.id)
-            console.log("usr to update: ", userToUpdate)
+        
         const uptedUser = await userToUpdate.set({
                 username: UserObject.username,
                 email: UserObject.email,
                 phone: UserObject.phone
         })
-        console.log("usr to uptedUser: ", uptedUser)
         const res = await uptedUser.save()
         
         if(res) {
-            console.log("user obj in service after update: ", res)
             return res
         } else {
             return "Fail to update User"
