@@ -8,8 +8,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import NavBar from '../Components/NavBar/NavBar';
 import { PieChart, RoseChart, ColChart } from '../Components/Chart/charts';
 import  ChartUpdate from '../Components/Chart/ChartUpdate'
-
-
+import  AddChart from '../Components/Chart/ChartAdd'
 
 
 const styles = StyleSheet.create({
@@ -29,17 +28,17 @@ const styles = StyleSheet.create({
 })
 
 
-const ChartPage = () => {
+const ChartPage: React.FC = () => {
     const [items, setItems] = useState<any[]>([]);
     const [lastId, setLastId] = useState(0);
+    
 
     useEffect(()=> {
         const getData = async () => {
             let newId: number = 0
             const res = await axios("http://localhost:5100/api/v1/chart/")
             setItems(res.data.data)
-
-            // get last chartData id to pass it to table as key for add new row
+            // ChartData last ID for new row count
             res.data.data.map((chart: any) =>  {
               chart.ChartData.map(({ id }: any) => {
                   if( newId <= id) newId = id
@@ -57,14 +56,14 @@ const ChartPage = () => {
     <>
     <NavBar />
     <Tabs
-      defaultActiveKey ={2}
+      defaultActiveKey ={'update'}
       transition={false}
       id="noanim-tab-example"
-      className={css(styles.tabsStyle)} 
+      className={css(styles.tabsStyle)}
     >
       {/* Button to update chart data*/}
-      <Tab title="Update Data" eventKey='update'>
-      <ChartUpdate items={items} lastId={lastId} />
+      <Tab title="Update Data" eventKey='update' >
+      <ChartUpdate items={items} lastId={lastId}/>
       
       {/* Charts */}
       </Tab>
@@ -86,7 +85,9 @@ const ChartPage = () => {
             </Tab>
         )
       })}
-      <Tab title={<PlusOutlined />} eventKey='add' />
+      <Tab title={<PlusOutlined />} eventKey='add'>
+        <AddChart />
+      </Tab>
     </Tabs>
     </>
   )
