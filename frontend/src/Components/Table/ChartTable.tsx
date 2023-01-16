@@ -124,24 +124,23 @@ const ChartsTable: React.FC<{ChartData: any, lastId: any}> = ({ ChartData, lastI
 
   // handle add a new chart row
   const handleAdd = () => {
-    console.log("new add before add", newAdd)
     const newData: Item = {
       key: count.toString(),
-      xField: 'Default Data',
-      yField: 'Default Data',
-      zField: 'Default Data',
+      xField: '',
+      yField: '',
+      zField: '',
       dataId: DataId
     };
+    form.setFieldsValue({ username: '', email: '', phone: ''});
+    setEditingKey(newData.key);
     setData([newData, ...data]);
     setCount(count + 1);
     setNewAdd(true)
-    console.log("new add after add", newAdd)
+
   };
   
   //Handle Save Chart Data
   const save = async (key: React.Key) => {
-    
-    console.log("new add in save", newAdd)
     try {
       const row = (await form.validateFields()) as Item;
 
@@ -151,7 +150,6 @@ const ChartsTable: React.FC<{ChartData: any, lastId: any}> = ({ ChartData, lastI
       if (index > -1) {
         const item = newData[index];
         if (row.zField === undefined ) row.zField = '0';
-        console.log("add before update ", newAdd)
         if(!newAdd) {
           //save the updated row of chart
          const updateResult = await axios.put("http://localhost:5100/api/v1/updatechart",{

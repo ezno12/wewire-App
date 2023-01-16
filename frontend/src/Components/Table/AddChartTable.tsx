@@ -1,16 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Form, Input, InputNumber, Popconfirm, Table, Typography, Button } from 'antd';
 import axios from 'axios';
-import {Link } from 'react-router-dom'
 
 
 interface Item {
   key: string;
-  username: string;
-  email: string;
-  phone: string;
+  xField: string;
+  yField: string;
+  zField: string;
 }
-
 
 
 interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
@@ -57,7 +55,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
   );
 };
 
-const UsersTable: React.FC = () => {
+const AddChartTable: React.FC = () => {
   
   const [form] = Form.useForm();
   const [data, setData] = useState<Item[]>([]);
@@ -65,28 +63,10 @@ const UsersTable: React.FC = () => {
   const [count, setCount] = useState(data.length);
 
 
-  useEffect(() => {
-    const userData: Item[] = []
-    const getUsers = async () => {
-      const res = await axios.get("http://localhost:5100/api/v1/users")
-      res.data.map(({id, username, phone, email}: any) => {
-        userData.push(
-          { key: id,
-            username: username,
-            email: email,
-            phone: phone,
-      })
-      return userData
-    })
-      setData(userData as any)
-    }
-    getUsers();
-  },[])
-
   const isEditing = (record: Item) => record.key === editingKey;
 
   const edit = (record: Partial<Item> & { key: React.Key }) => {
-    form.setFieldsValue({ username: '', email: '', phone: '', ...record });
+    form.setFieldsValue({ xField: '', yField: '', zField: '', ...record });
     setEditingKey(record.key);
   };
 
@@ -98,10 +78,12 @@ const UsersTable: React.FC = () => {
   const handleAdd = () => {
     const newData: Item = {
       key: count.toString(),
-      username: 'Default Username',
-      phone: 'Default Phone',
-      email: 'Default Email',
+      xField: '',
+      yField: '',
+      zField: '',
     };
+    form.setFieldsValue({ xField: '', yField: '', zField: ''});
+    setEditingKey(newData.key);
     setData([...data, newData]);
     setCount(count + 1);
   };
@@ -131,20 +113,13 @@ const UsersTable: React.FC = () => {
     try {
       const row = (await form.validateFields()) as Item;
       
+      
       const newData = [...data];
       const index = newData.findIndex((item) => key === item.key);
 
       if (index > -1) {
         const item = newData[index];
-          
-        const res = await axios.put("http://localhost:5100/api/v1/update",{
-          id: Number(item.key),
-          username: row.username,
-          email: row.email,
-          phone: row.phone
-        });
-          
-        if (res.data.username === row.username) {
+
           newData.splice(index, 1, {
             ...item,
             ...row,
@@ -152,10 +127,6 @@ const UsersTable: React.FC = () => {
           
           setData(newData);
           setEditingKey('');
-          console.log("Success to uapdte usre")
-        } else {
-          console.log("Failed to update user")
-        }
 
       } else {
         newData.push(row);
@@ -169,21 +140,21 @@ const UsersTable: React.FC = () => {
 
   const columns = [
     {
-      title: 'Username',
-      dataIndex: 'username',
+      title: 'xField',
+      dataIndex: 'xField',
       width: '27%',
       editable: true,
       
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
+      title: 'yField',
+      dataIndex: 'yField',
       width: '30%',
       editable: true,
     },
     {
-      title: 'Phone',
-      dataIndex: 'phone',
+      title: 'zField',
+      dataIndex: 'zField',
       width: '27%',
       editable: true,
     },
@@ -205,7 +176,7 @@ const UsersTable: React.FC = () => {
           <div>
           <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)} style={{ marginRight: '2rem'}}>
             Edit
-          </Typography.Link>
+        </Typography.Link>
           <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
             <Typography.Link>Delete</Typography.Link>
           </Popconfirm>
@@ -225,7 +196,7 @@ const UsersTable: React.FC = () => {
       ...col,
       onCell: (record: Item) => ({
         record,
-        inputType: col.dataIndex === 'email' && 'text',
+        inputType: col.dataIndex === 'yField' && 'text',
         dataIndex: col.dataIndex,
         title: col.title,
         editing: isEditing(record),
@@ -235,11 +206,9 @@ const UsersTable: React.FC = () => {
   });
 
   return (
-    <div style={{maxWidth: '70rem', marginInline: 'auto', marginBottom: '6rem'}}>
+    <div style={{width: '85%', marginInline: 'auto', marginBottom: '1rem'}}>
     <Form form={form} component={false}>
-       <Link to='/Adduser'>
-        <Button onClick={handleAdd} type="primary" style={{ marginBottom: 16, backgroundColor: 'red'}}>Add New User</Button>
-        </Link>
+        <Button onClick={handleAdd} type="primary" style={{ marginBottom: 16, backgroundColor: 'red'}}>Add Row</Button>
       <Table
         components={{
           body: {
@@ -258,6 +227,6 @@ const UsersTable: React.FC = () => {
   );
 };
 
-export default UsersTable;
+export default AddChartTable;
 
 

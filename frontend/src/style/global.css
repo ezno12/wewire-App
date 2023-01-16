@@ -83,3 +83,53 @@ button[id^="noanim-tab-example-tab-"]:hover {
 .ant-collapse-header-text:active {
     color: rgba(255, 0, 0, 0.88);
 }
+
+
+/* Image Card in add Chart */
+.ant-card-cover {
+    width: 240px;
+    height: 240px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Steps Icon on adding Chart */
+.ant-steps .ant-steps-item-process .ant-steps-item-icon {
+    background-color: rgba(255, 0, 0, 0.88);
+    border-color: rgba(255, 0, 0, 0.88);
+}
+
+.ant-progress-circle-path {
+    stroke: rgb(82, 196, 26) !important
+}
+
+.ant-steps .ant-steps-item-finish .ant-steps-item-icon > .ant-steps-icon {
+    color: white;
+  }
+
+.ant-steps .ant-steps-item-finish .ant-steps-item-icon {
+    background-color: rgb(82, 196, 26);
+    border-color: rgb(82, 196, 26);
+  }
+
+.ant-steps .ant-steps-item-finish > .ant-steps-item-container >
+.ant-steps-item-content > .ant-steps-item-title::after {
+    background-color: rgba(255, 26, 26, 0.7);
+}
+
+/* Segmented: Chosen chart type in adding chart */
+.ant-segmented-group {
+    color: rgba(255, 26, 26, 0.7)
+}
+
+.ant-segmented-item:hover {
+    color: white;
+}
+:where(.css-dev-only-do-not-override-1ij74fp).ant-segmented .ant-segmented-item:hover:not(.ant-segmented-item-selected) :not(.ant-segmented-item-disabled){
+    color: rgba(255, 26, 26, 0.7)
+}
+.ant-segmented-lg .ant-segmented-item-selected {
+    color: white;
+    background-color: red;
+}

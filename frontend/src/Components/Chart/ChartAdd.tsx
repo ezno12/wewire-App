@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
-import { Button, message, Steps, Form, Input, Radio, Card } from 'antd';
+import { Button, message, Steps, Form, Input, Card, Segmented } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import {css, StyleSheet } from 'aphrodite'
-import type { RadioChangeEvent } from 'antd';
+import {css, StyleSheet } from 'aphrodite';
+import '../../style/global.css'
+import AddTable from '../Table/AddChartTable'
+import pie from '../../assat/pie.webp';
+import bar from '../../assat/bar.webp';
+import rose from '../../assat/rose.webp'
+
+const { Meta } = Card;
 
 const styles = StyleSheet.create({
     containerStyle: {
@@ -10,7 +16,8 @@ const styles = StyleSheet.create({
         marginInline: 'auto',
     },
     contentStyle : {
-        height: '40rem',
+        height: 'auto',
+        paddingBottom: '4rem',
         display: 'flex',
         flexFlow: 'column wrap',
         alignItems: 'center',
@@ -21,8 +28,33 @@ const styles = StyleSheet.create({
         marginTop: '1rem'
     },
     formItemStyle : {
-      margin: '4rem 0'
+      margin: '2rem 0'
     },
+    cardImgStyle: {
+      maxWidth: 190,
+      maxHeight: 190,
+      marginInline: 'auto'
+    },
+    stepBtnNextStyle: {
+      width: '5.891rem',
+      backgroundColor: 'rgb(255, 26, 26)',
+      ':hover': {
+        backgroundColor: 'rgba(255, 26, 26, .8)',
+      }
+    },
+    stepBtnPrevStyle: {
+      margin: '0 .5rem',
+      ':hover': {
+        color: 'rgb(255, 26, 26)',
+        backgroundColor: 'rgba(255, 255, 255, .8)',
+        borderColor: 'rgb(255, 26, 26)',
+      }
+    },
+    segmentedStyle: {
+      display: 'flex',
+      flexFlow: 'row wrap',
+      margin: '0.5rem 0'
+    }
 })
 
 // Component of First Step
@@ -99,36 +131,45 @@ const FistStep: React.FC = () => {
   );
 }
 
-// Component of First Step
+// Component of Second Step
 const SecondStep: React.FC = () => {
-  const [value, setValue] = useState(1);
+  const [value, setValue] = useState('Pie Chart');
 
-  const onChange = (e: RadioChangeEvent) => {
-    console.log('radio checked', e.target.value);
-    setValue(e.target.value);
+  const onChange = (item: any) => {
+    setValue(item);
   };
+
 
   return (
     <>
-    <Radio.Group onChange={onChange} value={value} size="large">
-      <Radio value={1}>
-      </Radio>
-      <Radio value={2}></Radio>
-      <Radio value={3}></Radio>
-      <Radio value={4}></Radio>
-    </Radio.Group>
-     { value === 2 &&
+    <Segmented
+    className={css(styles.segmentedStyle)}
+    size='large'
+    options={['Pie Chart', 'Rose Chart', 'Bar Chart']}
+    onChange={(item) => onChange(item)}
+    />
+    { value === 'Pie Chart' &&
      <Card
      hoverable
-     style={{ width: 240, marginTop: '2rem' }}
-     cover={<img alt="Pie Chart Image" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}
-     />}
-     { value ===3 &&
+     style={{ width: 240, margin: '2rem 0 1rem 0' }}
+     cover={<img className={css(styles.cardImgStyle)} alt="Pie Chart Example" src={pie} />}
+     >
+      <Meta title="Pie Chart" style={{textAlign: 'center'}}/>
+      </Card>}
+     { value === 'Rose Chart' &&
      <Card
      hoverable
-     style={{ width: 240, marginTop: '2rem' }}
-     cover={<img alt="Pie Chart Image" src="https://media.geeksforgeeks.org/wp-content/uploads/20220914112521/PieChart.png" />}
-     />}
+     style={{ width: 240, margin: '2rem 0 1rem 0' }}
+     cover={<img className={css(styles.cardImgStyle)} alt="Rose Chart Example" src={rose} />}
+     ><Meta title="Rose Chart" style={{textAlign: 'center'}}/>
+     </Card>}
+     { value === 'Bar Chart' &&
+     <Card
+     hoverable
+     style={{ width: 240, margin: '2rem 0 1rem 0' }}
+     cover={<img className={css(styles.cardImgStyle)} alt="Bar Chart Example" src={bar} />}
+     ><Meta title="Bar Chart" style={{textAlign: 'center'}}/>
+     </Card>}
    </>
   );
 }
@@ -145,7 +186,7 @@ const steps = [
   },
   {
     title: 'Chart Data',
-    content: <FistStep />,
+    content: <AddTable />,
   },
 ];
 
@@ -163,8 +204,8 @@ const AddChart: React.FC = () => {
     setPercent(precent - 40)
   };
   const handleClick = async () => {
-    await message.success('Processing complete!')
-      .then(() => setPercent(100)) 
+    message.success('Processing complete!')
+    setTimeout(() => setPercent(100), 800)
   }
   const items = steps.map((item) => ({ key: item.title, title: item.title }));
 
@@ -175,14 +216,14 @@ const AddChart: React.FC = () => {
           {/* Progress Buttons in Steps */}
           <div style={{ margin: '3rem 8rem 0 0', alignSelf: 'flex-end'}}>
             {current > 0 && (
-              <Button size='large' style={{ margin: '0 .5rem' }} onClick={() => prev()} >
+              <Button size='large' className={css(styles.stepBtnPrevStyle)} onClick={() => prev()} >
                 Previous
               </Button>
             )}
             {current < steps.length - 1 && (
               <Button 
                 size='large'
-                style ={{width: '5.891rem'}}
+                className={css(styles.stepBtnNextStyle)}
                 type="primary" onClick={() => next()}
                 >
                 Next
@@ -191,7 +232,7 @@ const AddChart: React.FC = () => {
             {current === steps.length - 1 && (
               <Button
                 size='large'
-                style ={{width: '5.891rem'}}
+                className={css(styles.stepBtnNextStyle)}
                 type="primary"
                 htmlType="submit"
                 onClick={handleClick}
