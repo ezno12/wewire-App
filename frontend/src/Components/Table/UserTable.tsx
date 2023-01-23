@@ -4,6 +4,7 @@ import axios from 'axios';
 import {Link } from 'react-router-dom'
 
 
+
 interface Item {
   key: string;
   username: string;
@@ -58,9 +59,8 @@ const EditableCell: React.FC<EditableCellProps> = ({
 };
 
 const UsersTable: React.FC = () => {
-  
   const [form] = Form.useForm();
-  const [data, setData] = useState<Item[]>([]);
+  const [data, setData] = useState<Item[]>([])
   const [editingKey, setEditingKey] = useState('');
   const [count, setCount] = useState(data.length);
 
@@ -78,7 +78,8 @@ const UsersTable: React.FC = () => {
       })
       return userData
     })
-      setData(userData as any)
+    setData(userData as any)
+      
     }
     getUsers();
   },[])
@@ -149,7 +150,6 @@ const UsersTable: React.FC = () => {
             ...item,
             ...row,
           });
-          
           setData(newData);
           setEditingKey('');
           console.log("Success to uapdte usre")

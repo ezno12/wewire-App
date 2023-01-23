@@ -26,7 +26,9 @@ const styles = StyleSheet.create({
       gap: '1rem',
       justifyContent: 'center',
       flexFlow: 'row wrap',
-      margin:'5rem 2rem'
+      margin:'5rem 2rem',
+      maxWidth: '76.75rem',
+      marginInline: 'auto'
     }
 })
 

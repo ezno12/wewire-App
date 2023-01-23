@@ -5,6 +5,7 @@ import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import { css, StyleSheet } from 'aphrodite';
 import { PlusOutlined } from '@ant-design/icons';
+import { Spin } from 'antd';
 import NavBar from '../Components/NavBar/NavBar';
 import { PieChart, RoseChart, ColChart } from '../Components/Chart/charts';
 import  ChartUpdate from '../Components/Chart/ChartUpdate'
@@ -24,6 +25,12 @@ const styles = StyleSheet.create({
     ':active': {
       color: 'white'
     }
+  },
+  spinDivStyle: {
+    height:'20rem',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   }
 })
 
@@ -31,7 +38,7 @@ const styles = StyleSheet.create({
 const ChartPage: React.FC = () => {
     const [items, setItems] = useState<any[]>([]);
     const [lastId, setLastId] = useState(0);
-    
+    const [loading, setLoading] = useState(true)
 
     useEffect(()=> {
         const getData = async () => {
@@ -47,15 +54,25 @@ const ChartPage: React.FC = () => {
               return newId
           })
           setLastId(newId)
+          setLoading(false)
         }
         getData()
         
     }, [])
 
+    const handleDeleteChart= (id: any) => {
+      console.log('http://localhost:5100/api/v1/deletechart')
+      console.log("done", id)
+    }
+
     return (
     <>
     <NavBar />
-    <Tabs
+    {loading
+    ? <div className={css(styles.spinDivStyle)}>
+      <Spin size="large" tip="LOADING"/>
+      </div>
+     : <Tabs
       defaultActiveKey ={'update'}
       transition={false}
       id="noanim-tab-example"
@@ -79,7 +96,7 @@ const ChartPage: React.FC = () => {
             <Tab 
               eventKey={id}
               key={id}
-              title={<>{title} <span className={css(styles.btnClose)}>&times;</span></>}
+              title={<>{title} <span className={css(styles.btnClose)} onClick={handleDeleteChart}>&times;</span></>}
               >
               {CompChartList[Type]}
             </Tab>
@@ -88,7 +105,7 @@ const ChartPage: React.FC = () => {
       <Tab title={<PlusOutlined />} eventKey='add'>
         <AddChart />
       </Tab>
-    </Tabs>
+    </Tabs>}
     </>
   )
 }

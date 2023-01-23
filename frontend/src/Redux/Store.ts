@@ -1,9 +1,9 @@
-import UserRedux from './UserRedux'
+import ChartRedux from './ChartRedux'
 import { configureStore } from "@reduxjs/toolkit";
 
 const store = configureStore({
     reducer: {
-    users: UserRedux
+    newCharts: ChartRedux
     },
   });
 

@@ -119,10 +119,23 @@ button[id^="noanim-tab-example-tab-"]:hover {
 }
 
 /* Segmented: Chosen chart type in adding chart */
+.ant-segmented-lg {
+    max-width: 85%;
+    margin-inline: auto;
+}
+.ant-segmented {
+    background-color: transparent;
+}
+.ant-segmented .ant-segmented-group {
+    flex-flow: row wrap;
+}
 .ant-segmented-group {
     color: rgba(255, 26, 26, 0.7)
 }
 
+.ant-segmented-item {
+    background-color: white;
+}
 .ant-segmented-item:hover {
     color: white;
 }
@@ -133,3 +146,19 @@ button[id^="noanim-tab-example-tab-"]:hover {
     color: white;
     background-color: red;
 }
+
+/* override loading spinner default  */
+.ant-spin-lg .ant-spin-dot {
+    font-size: 45px;
+  }
+.ant-spin .ant-spin-dot-item {
+    background-color: rgba(255, 26, 26);
+}
+.ant-spin-lg .ant-spin-dot i {
+    width: 30px;
+    height: 30px;
+}
+.ant-spin.ant-spin-show-text .ant-spin-text {
+    font-size: 20px;
+    color: rgba(0,0,0, 0.7);
+  }

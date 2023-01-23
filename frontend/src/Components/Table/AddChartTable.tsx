@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { Form, Input, InputNumber, Popconfirm, Table, Typography, Button } from 'antd';
-import axios from 'axios';
+import { useAppDispatch, useAppSelector} from '../../Redux/ReduxHooks'
+import {
+  incrementChartDataId,
+  setChartData,
+  decrementChartDataId
+} from '../../Redux/ChartRedux'
 
 
 interface Item {
@@ -8,6 +13,7 @@ interface Item {
   xField: string;
   yField: string;
   zField: string;
+  dataId: string
 }
 
 
@@ -60,13 +66,15 @@ const AddChartTable: React.FC = () => {
   const [form] = Form.useForm();
   const [data, setData] = useState<Item[]>([]);
   const [editingKey, setEditingKey] = useState('');
-  const [count, setCount] = useState(data.length);
+  const count = useAppSelector((state)=> state.newCharts.chartDataId);
+  const dataId = useAppSelector((state)=> state.newCharts.chartId)
+  const dispatch = useAppDispatch()
 
 
   const isEditing = (record: Item) => record.key === editingKey;
 
   const edit = (record: Partial<Item> & { key: React.Key }) => {
-    form.setFieldsValue({ xField: '', yField: '', zField: '', ...record });
+    form.setFieldsValue({ xField: '', yField: '', zField: '', dataId: '',...record });
     setEditingKey(record.key);
   };
 
@@ -81,34 +89,30 @@ const AddChartTable: React.FC = () => {
       xField: '',
       yField: '',
       zField: '',
+      dataId: dataId.toString()
     };
     form.setFieldsValue({ xField: '', yField: '', zField: ''});
     setEditingKey(newData.key);
     setData([...data, newData]);
-    setCount(count + 1);
+    dispatch(incrementChartDataId())
   };
-
-  //Handle Delet user
-  const handleDelete = async (key: React.Key) => {
-    const user = JSON.parse(localStorage.getItem('user') as any);
-    const deletedUser: any = data.filter((item) => item.key === key)
-    console.log(deletedUser[0].username)
-    try {
-      const res = await axios.delete(`http://localhost:5100/api/v1/user?username=${deletedUser[0].username}`,
-      { headers: {
-        Authorization: `Bearer ${user}` 
-      }})
-      if(res) {
-        const newData = data.filter((item) => item.key !== key);
-        setData(newData);
+  
+  //Handle Delete data
+  const handleDelete = (key: React.Key) => {
+    const newData = data.filter((item) => item.key !== key);
+    setData(newData);
+    dispatch(setChartData(newData.map(({key, xField, yField, zField, dataId})=> {
+      return {
+        id: Number(key),
+        xField: xField,
+        yField: yField,
+        zField: zField,
+        dataId: dataId
       }
-} catch(err) {
-
-}
-    
+    })))
+    dispatch(decrementChartDataId())
   };
-
-  //Handle Save user
+  //Handle Save data
   const save = async (key: React.Key) => {
     try {
       const row = (await form.validateFields()) as Item;
@@ -119,13 +123,22 @@ const AddChartTable: React.FC = () => {
 
       if (index > -1) {
         const item = newData[index];
-
+          
           newData.splice(index, 1, {
             ...item,
             ...row,
           });
-          
+
           setData(newData);
+          dispatch(setChartData(newData.map(({key, xField, yField, zField, dataId})=> {
+            return {
+              id: Number(key),
+              xField: xField,
+              yField: yField,
+              zField: zField,
+              dataId: dataId
+            }
+          })));
           setEditingKey('');
 
       } else {
