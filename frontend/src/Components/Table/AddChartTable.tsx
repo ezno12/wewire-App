@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Form, Input, InputNumber, Popconfirm, Table, Typography, Button } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Form, Input, InputNumber, Popconfirm, Table, Typography, Button, Alert } from 'antd';
 import { useAppDispatch, useAppSelector} from '../../Redux/ReduxHooks'
 import {
   incrementChartDataId,
   setChartData,
-  decrementChartDataId
+  decrementChartDataId,
+  errorRowCount
 } from '../../Redux/ChartRedux'
 
 
@@ -15,7 +16,9 @@ interface Item {
   zField: string;
   dataId: string
 }
-
+type PropsType = {
+  handleDone: Function
+}
 
 interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
   editing: boolean;
@@ -61,16 +64,18 @@ const EditableCell: React.FC<EditableCellProps> = ({
   );
 };
 
-const AddChartTable: React.FC = () => {
+const AddChartTable: React.FC<PropsType> = () => {
   
   const [form] = Form.useForm();
   const [data, setData] = useState<Item[]>([]);
   const [editingKey, setEditingKey] = useState('');
+  const [error, setError] = useState(false)
+  const rowCount = useAppSelector((state)=> state.newCharts.rowCount)
   const count = useAppSelector((state)=> state.newCharts.chartDataId);
   const dataId = useAppSelector((state)=> state.newCharts.chartId)
   const dispatch = useAppDispatch()
 
-
+  
   const isEditing = (record: Item) => record.key === editingKey;
 
   const edit = (record: Partial<Item> & { key: React.Key }) => {
@@ -95,12 +100,13 @@ const AddChartTable: React.FC = () => {
     setEditingKey(newData.key);
     setData([...data, newData]);
     dispatch(incrementChartDataId())
+    rowCount === 99999 ? dispatch(errorRowCount(1)) : dispatch(errorRowCount(rowCount + 1)) 
   };
   
   //Handle Delete data
   const handleDelete = (key: React.Key) => {
     const newData = data.filter((item) => item.key !== key);
-    setData(newData);
+  setData(newData);
     dispatch(setChartData(newData.map(({key, xField, yField, zField, dataId})=> {
       return {
         id: Number(key),
@@ -111,7 +117,9 @@ const AddChartTable: React.FC = () => {
       }
     })))
     dispatch(decrementChartDataId())
-  };
+    dispatch(errorRowCount(rowCount - 1))
+    
+}
   //Handle Save data
   const save = async (key: React.Key) => {
     try {
@@ -150,6 +158,10 @@ const AddChartTable: React.FC = () => {
       console.log('Validate Failed:', errInfo);
     }
   };
+
+  useEffect(() => {
+    rowCount === 0 ? setError(true) : setError(false)
+  },[rowCount])
 
   const columns = [
     {
@@ -221,6 +233,13 @@ const AddChartTable: React.FC = () => {
   return (
     <div style={{width: '85%', marginInline: 'auto', marginBottom: '1rem'}}>
     <Form form={form} component={false}>
+    {error && <Alert
+      style={{maxWidth: '37%', marginInlineStart: '23%'}}
+      message="Data for the KPI chart needs to be added"
+      type="error"
+      closable
+      showIcon
+    />}
         <Button onClick={handleAdd} type="primary" style={{ marginBottom: 16, backgroundColor: 'red'}}>Add Row</Button>
       <Table
         components={{

@@ -1,6 +1,5 @@
 import React, { useState, useReducer, useEffect} from 'react';
-import { Button, message, Steps, Card, Segmented } from 'antd';
-//import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, message, Steps, Card, Segmented, Alert } from 'antd';
 import Form from 'react-bootstrap/Form';
 import {css, StyleSheet } from 'aphrodite';
 import axios from 'axios';
@@ -24,7 +23,7 @@ import {
 type stepsStatusType = "error" | "wait" | "process" | "finish" | undefined
 
 
-
+const departements = ['Management' , 'Maintenance', 'Quality', 'Security', 'Environment', 'IE', 'Logistic', 'RH', 'Production', 'IT']
 const { Meta } = Card;
 
 const styles = StyleSheet.create({
@@ -69,152 +68,88 @@ const styles = StyleSheet.create({
     },
     segmentedStyle: {
       margin: '1.5rem 0'
+    },
+    alertContainerStyle: {
+      maxWidth: '29%',  
+      marginBottom: '1rem'
     }
 })
 
 // Component of First Step
 const FistStep: React.FC = () => {
-  const [valid, setValid] = useState<boolean>()
-  const initialState = {title: "", depar: ""}
+  
+  const initialState = {title: "", depar: ""}  
+  
   const dispatch = useAppDispatch()
   const [TitleState, updateState] = useReducer(
-    (state: any, updates: any) => {
-      dispatch(setChartTitle({ ...state, ...updates }))
-      return ({ ...state, ...updates })},
-    initialState
-  )
-  
+    (state: any, updates: any) =>  ({ ...state, ...updates }), initialState)
 
- 
-  const handleValidation = () => {
-    if(TitleState.title === "" || TitleState.depar === "") {
-      setValid(false)
-    }
-    else if (TitleState.title.length < 5) {
-      setValid(false)
-    }
-    else if (TitleState.depar === "Choose Departements") {
-      setValid(false)
-    }else {
-      setValid(true)
+  const [titleValid, setTitleValid] = useState<boolean>(false)
+  const [deparValid, setDeparValid] = useState<boolean>(false)
+  const [valid, setValid] = useState<boolean>()
+  const [error, setError] = useState(false)
+
+  
+  const TitleValidation = () => {
+    if(TitleState.title === "" || TitleState.title.length < 5 ) {
+      setTitleValid(false)
+    } else {
+      setTitleValid(true)
     }
   }
+ 
+  const deparValidation = () => {
+    if (TitleState.depar === "Choose Departements" || TitleState.depar === "") {
+      setDeparValid(false)
+    }else {
+      setDeparValid(true)
+    }
+  }
+
+  useEffect(()=> {
+    titleValid && deparValid ? setValid(true) : setValid(false)
+    if(titleValid && deparValid) {
+      dispatch(setChartTitle(TitleState))
+    }
+    
+  }, [titleValid, deparValid, TitleState, dispatch])
 
   
   return (
     
     <>
-    <Form validated={valid} onChange={handleValidation}>
-    <Form.Group className="mb-3" onChange={(e: any)=>updateState({ title: e.target.value})}>
+    <div className={css(styles.alertContainerStyle)}>
+      {error && <Alert
+      message="Chart Details Error"
+      description="- Chart title must be full string.  
+                   - Title length over 5 characters.  
+                   - Department must be chosen."
+      type="error"
+      closable
+      showIcon
+      style={{marginBottom: '0.5rem'}}
+    />}
+    </div>
+    <Form validated={valid} >
+    <Form.Group className="mb-3" onChange={(e: any)=>{updateState({ title: e.target.value}); TitleValidation()}}>
       <Form.Control placeholder="Please Add chart title" />
     </Form.Group>
     <Form.Group className="mb-3" onChange={(e: any)=>updateState({ depar: e.target.value})}>
-      <Form.Select>
+      <Form.Select onClick={deparValidation}>
       <option >Choose Departements</option>
-        <option >Management</option>
-        <option>Quality</option>
-        <option>Environment</option>
-        <option>Logistic</option>
-        <option>Production</option>
-        <option>RH</option>
-        <option>IT</option>
+        {departements.map((item) => {
+          return (<option >{item}</option>)
+        })}
       </Form.Select>
     </Form.Group>
     </Form>
-    {/*<Form name="dynamic_form_item">
-      <Form.List
-        name="names"
-        rules={[
-          {
-            validator: async (_, names) => {
-              if (!names || names.length < 2) {
-                return Promise.reject(new Error('You Need to Add Chart Title'));
-              }
-            },
-          },
-        ]}
-      >
-        {(fields, { add, remove }, { errors }) => (
-          <div className={css(styles.formItemStyle)}>
-            {fields.map((field, index) => (
-              <>
-              <Form.Item
-                required={false}
-                key={field.key}
-              >
-                <Form.Item
-                  {...field}
-                  validateTrigger={['onChange', 'onBlur']}
-                  rules={[
-                    {
-                      required: true,
-                      whitespace: true,
-                      message: "Please Add Valide Chart Title.",
-                    },
-                  ]}
-                  noStyle
-                >
-                <Input
-                  placeholder="Add Chart Title"
-                  style={{ width: '24rem', height: '2.5rem' }}
-                  onChange={(e)=> handleTitleValue(e.target.value)}
-                  />
-                </Form.Item>
-                {fields.length >= 1 ? (
-                  <MinusCircleOutlined
-                    style={{marginLeft: '0.3rem', fontSize: '1.3rem', color: 'red'}}
-                    twoToneColor={"#FF0000"}
-                    className="dynamic-delete-button"
-                    onClick={() => remove(field.name)}
-                  />
-                ) : null}
-              </Form.Item>
-              <Form.Item style={{marginTop: '24px', maxWidth: '94%'}}>
-                {fields.length === 1 &&
-                <Select
-                onSelect={(slectedData)=> handleDeparValue(slectedData)}
-                size="large"
-                placeholder="Select a Departements"
-                optionFilterProp="children"
-                filterOption={(input, option) =>
-                  (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                }
-                options={[
-                  { value: 'Management', label: 'Management'}, { value: 'Maintenance', label: 'Maintenance'},
-                  { value: 'Quality', label: 'Quality'}, { value: 'Security', label: 'Security'},
-                  { value: 'Environment', label: 'Environment'}, { value: 'IE', label: 'IE'},
-                  { value: 'Logistic', label: 'Logistic'}, { value: 'IT', label: 'IT'},
-                  { value: 'Production', label: 'Production'}, { value: 'RH', label: 'RH'},
-                ]}
-              />}
-              </Form.Item>
-              </>
-            ))}
-            { fields.length < 1 ? (<Form.Item style={{width: '24rem'}}>
-              <Button
-                type="dashed"
-                onClick={() => add()}
-                style={{ width: '90%', marginLeft: '19.5px' }}
-                icon={<PlusOutlined />}
-                size="large"
-              >
-                Add KPI
-              </Button>
-              <Form.ErrorList errors={errors} />
-            </Form.Item>)
-            : null
-            }
-          </div>
-        )}
-      </Form.List>
-          </Form> */}
   </>
     
   );
 }
 
 // Component of Second Step
-const SecondStep: React.FC = ({ handleTypeData }: any) => {
+const SecondStep: React.FC = () => {
   const value = useAppSelector((state) => state.newCharts.chartType)
   const dispatch = useAppDispatch()
   
@@ -290,22 +225,6 @@ const AddChart: React.FC = () => {
     oldChartData()
   // eslint-disable-next-line
   },[])
-  
-
-  const steps = [
-    {
-      title: 'Chart Title',
-      content: <FistStep />,
-    },
-    {
-      title: 'Chart Type',
-      content: <SecondStep />,
-    },
-    {
-      title: 'Chart Data',
-      content: <AddTable />,
-    },
-  ];
 
   const next = () => {
     setCurrent(current + 1);
@@ -316,7 +235,7 @@ const AddChart: React.FC = () => {
     setCurrent(current - 1);
     setPercent(precent - 40)
   };
-  const handleClick = async () => {
+  const handleDone = async () => {
    
     try {
       const res:any = await axios.post("http://localhost:5100/api/v1/addchart", {
@@ -346,6 +265,20 @@ const AddChart: React.FC = () => {
     
   }
   
+  const steps = [
+    {
+      title: 'Chart Title',
+      content: <FistStep />,
+    },
+    {
+      title: 'Chart Type',
+      content: <SecondStep />,
+    },
+    {
+      title: 'Chart Data',
+      content: <AddTable handleDone={handleDone}/>,
+    },
+  ];
 
   useEffect(() => {
     const oldChartData = async () => {
@@ -393,7 +326,7 @@ const AddChart: React.FC = () => {
                 className={css(styles.stepBtnNextStyle)}
                 type="primary"
                 htmlType="submit"
-                onClick={handleClick}
+                onClick={handleDone}
                 >
                 Done
               </Button>

@@ -11,7 +11,8 @@ type InitialState ={
         xField: string,
         yField: string,
         zField: string,
-    }]
+    }],
+    rowCount: number
 }
 
 const initialState: InitialState = {
@@ -24,7 +25,8 @@ const initialState: InitialState = {
         xField: "",
         yField: "",
         zField: "",
-    }]
+    }],
+    rowCount: 99999
 }
 const chartSlice = createSlice({
     initialState,
@@ -37,7 +39,9 @@ const chartSlice = createSlice({
             state.chartId += 1
         },
         setChartTitle(state, action: PayloadAction<{title: string, depar: string}>){
-            state.chartTitle = action.payload
+            state.chartTitle.title = action.payload.title
+            action.payload.depar === "Choose Departements" && (action.payload.depar = "")
+            state.chartTitle.depar = action.payload.depar
         },
         setChartType(state, action: PayloadAction<{type: string}>){
             state.chartType = action.payload.type
@@ -53,6 +57,9 @@ const chartSlice = createSlice({
         },
         decrementChartDataId(state){
             state.chartDataId -= 1 
+        },
+        errorRowCount(state, action: PayloadAction<number>){
+            state.rowCount = action.payload
         }
     },
 });
@@ -66,6 +73,7 @@ export const {
                 setChartType,
                 incrementChartId,
                 incrementChartDataId,
-                decrementChartDataId
+                decrementChartDataId,
+                errorRowCount
             } = chartSlice.actions;
 export default chartSlice.reducer; 
