@@ -4,8 +4,8 @@ import "../style/global.css"
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import { css, StyleSheet } from 'aphrodite';
-import { PlusOutlined } from '@ant-design/icons';
-import { Spin } from 'antd';
+import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { Spin, Popconfirm, message } from 'antd';
 import NavBar from '../Components/NavBar/NavBar';
 import { PieChart, RoseChart, ColChart } from '../Components/Chart/charts';
 import  ChartUpdate from '../Components/Chart/ChartUpdate'
@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
     },
   btnClose: {
     fontSize: '1.2rem',
-    fontWeight: 600,
+    fontWeight: 900,
     ':active': {
       color: 'white'
     }
@@ -39,6 +39,18 @@ const ChartPage: React.FC = () => {
     const [items, setItems] = useState<any[]>([]);
     const [lastId, setLastId] = useState(0);
     const [loading, setLoading] = useState(true)
+    const [delKey, setDelKey] = useState<number>();
+
+    const getChartKey = (id: number) => {
+      setDelKey(id)
+    }
+    // eslint-disable-next-line
+    const handleDeleteChart = async  () => {
+      const res = await axios.delete(`http://localhost:5100/api/v1/deletechart?id=${delKey}`)
+      if(!res.data.error) {
+        message.success("Chart Deleted successfully")
+      }
+    }
 
     useEffect(()=> {
         const getData = async () => {
@@ -58,12 +70,7 @@ const ChartPage: React.FC = () => {
         }
         getData()
         
-    }, [])
-
-    const handleDeleteChart= (id: any) => {
-      console.log('http://localhost:5100/api/v1/deletechart')
-      console.log("done", id)
-    }
+    }, [handleDeleteChart])
 
     return (
     <>
@@ -73,6 +80,7 @@ const ChartPage: React.FC = () => {
       <Spin size="large" tip="LOADING"/>
       </div>
      : <Tabs
+      onChange={(key) => console.log("Clicked",key)}
       defaultActiveKey ={'update'}
       transition={false}
       id="noanim-tab-example"
@@ -96,7 +104,16 @@ const ChartPage: React.FC = () => {
             <Tab 
               eventKey={id}
               key={id}
-              title={<>{title} <span className={css(styles.btnClose)} onClick={handleDeleteChart}>&times;</span></>}
+              title={
+              <>{title}
+              <Popconfirm
+                title="Are you sure to delete this Chart?"
+                icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+                onConfirm={handleDeleteChart}
+              >
+                <span className={css(styles.btnClose)} onClick={() => getChartKey(Number(id))}>&times;</span>
+              </Popconfirm>
+              </>}
               >
               {CompChartList[Type]}
             </Tab>

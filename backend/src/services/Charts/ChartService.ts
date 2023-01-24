@@ -33,7 +33,6 @@ export async function AddChart(data){
 
 // Update exsisting a Chart
 export async function UpdateChart(chartObj){
-    console.log('chart obj: ', chartObj)
     try {
         let chartToUpdate = await ChartData.findByPk(chartObj.id)
         if(chartToUpdate) {
@@ -55,7 +54,7 @@ export async function UpdateChart(chartObj){
 }
 // dd new row to chart
 export async function addChartRow(rowObj){
-    console.log("row obj: ", rowObj)
+    
     try {
         return await ChartData.create({
             id: Number(rowObj.id),
@@ -69,9 +68,10 @@ export async function addChartRow(rowObj){
     }
 }
 // Delete Chart from DB
-export async function deleteChart(data){
+export async function deleteChart(id){
+    
     try {
-        const ChartId = data.id
+        const ChartId = id
         const res = await ChartData.destroy({where: {dataId: ChartId}})
         if(res) {
             const result = await Chart.destroy(
@@ -91,7 +91,6 @@ export async function deleteChartRow(rowId){
         
         const res = await ChartData.destroy({where: {id: rowId}})
         if(res) {
-    
             return res
         }
     } catch(err) {

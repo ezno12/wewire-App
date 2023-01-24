@@ -59,11 +59,10 @@ export async function AddChartRow(req: Request, response: Response): Promise<any
 
 export async function DeleteChart (req: Request, response: Response): Promise<any> {
     try {
-        console.log("query id: ",req.query.id)
         const res: any = await deleteChart(req.query.id)
 
         if(res) {
-            response.status(200).json({error: false, res})
+            response.status(200).json({error: false, message: 'Success to delete Chart'})
         } else {
             response.status(400).json({error: true, message: 'Error while deleting chart'});
         } 
