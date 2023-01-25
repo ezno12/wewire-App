@@ -2,6 +2,7 @@ import React, { useState, useReducer, useEffect} from 'react';
 import { Button, message, Steps, Card, Segmented, Alert } from 'antd';
 import Form from 'react-bootstrap/Form';
 import {css, StyleSheet } from 'aphrodite';
+import validator from 'validator'
 import axios from 'axios';
 import '../../style/global.css'
 import AddTable from '../Table/AddChartTable'
@@ -76,43 +77,37 @@ const styles = StyleSheet.create({
 })
 
 // Component of First Step
-const FistStep: React.FC = () => {
+const FirstStep: React.FC = () => {
   
   const initialState = {title: "", depar: ""}  
   
   const dispatch = useAppDispatch()
   const [TitleState, updateState] = useReducer(
     (state: any, updates: any) =>  ({ ...state, ...updates }), initialState)
-
-  const [titleValid, setTitleValid] = useState<boolean>(false)
-  const [deparValid, setDeparValid] = useState<boolean>(false)
   const [valid, setValid] = useState<boolean>()
   const [error, setError] = useState(false)
 
-  
-  const TitleValidation = () => {
-    if(TitleState.title === "" || TitleState.title.length < 5 ) {
-      setTitleValid(false)
-    } else {
-      setTitleValid(true)
-    }
-  }
- 
-  const deparValidation = () => {
-    if (TitleState.depar === "Choose Departements" || TitleState.depar === "") {
-      setDeparValid(false)
-    }else {
-      setDeparValid(true)
-    }
-  }
-
   useEffect(()=> {
-    titleValid && deparValid ? setValid(true) : setValid(false)
-    if(titleValid && deparValid) {
+    
+    if (TitleState.depar.length === 0 && TitleState.title.length === 0) {
+      setValid(false)
+    } else if ((TitleState.depar.length === 0 || TitleState.depar === "Choose Departements") && TitleState.title.length !== 0){
+      setValid(false)
+      setError(true)
+    } else if ((TitleState.title.length < 5 || !validator.isAlpha(TitleState.title, ['en-US'] as any, {'ignore': ' '})) && TitleState.depar.length !== 0){
+      setValid(false)
+      setError(true)
+    }
+    else {
+      setValid(true)
+      setError(false)
+    }
+
+    if(valid) {
       dispatch(setChartTitle(TitleState))
     }
     
-  }, [titleValid, deparValid, TitleState, dispatch])
+  }, [valid, TitleState, dispatch])
 
   
   return (
@@ -131,11 +126,11 @@ const FistStep: React.FC = () => {
     />}
     </div>
     <Form validated={valid} >
-    <Form.Group className="mb-3" onChange={(e: any)=>{updateState({ title: e.target.value}); TitleValidation()}}>
+    <Form.Group className="mb-3" onChange={(e: any)=>{updateState({ title: e.target.value})}}>
       <Form.Control placeholder="Please Add chart title" />
     </Form.Group>
     <Form.Group className="mb-3" onChange={(e: any)=>updateState({ depar: e.target.value})}>
-      <Form.Select onClick={deparValidation}>
+      <Form.Select >
       <option >Choose Departements</option>
         {departements.map((item) => {
           return (<option >{item}</option>)
@@ -268,7 +263,7 @@ const AddChart: React.FC = () => {
   const steps = [
     {
       title: 'Chart Title',
-      content: <FistStep />,
+      content: <FirstStep />,
     },
     {
       title: 'Chart Type',

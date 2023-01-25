@@ -40,7 +40,6 @@ const chartSlice = createSlice({
         },
         setChartTitle(state, action: PayloadAction<{title: string, depar: string}>){
             state.chartTitle.title = action.payload.title
-            action.payload.depar === "Choose Departements" && (action.payload.depar = "")
             state.chartTitle.depar = action.payload.depar
         },
         setChartType(state, action: PayloadAction<{type: string}>){
