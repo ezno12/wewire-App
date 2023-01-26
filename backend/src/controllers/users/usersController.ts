@@ -57,27 +57,33 @@ export async function addUser(request: Request, response: Response): Promise<any
         const oldUserPhone = await selectUsersByPhone(objectUser.phone)
     
         if (oldUserEmail)
-        return response.status(400).json({ 
-            error: true,
+        return response.status(200).json({ 
+            errorType: 1,
             message: "User email already exists"
         });
         if (oldUserUsername)
-        return response.status(400).json({ 
-            error: true,
+        return response.status(200).json({ 
+            errorType: 2,
             message: "Username already exists"
         });
         if (oldUserPhone)
-        return response.status(400).json({ 
-            error: true,
+        return response.status(200).json({ 
+            errorType: 3,
             message: "User phone already exists"
         });
 
 
-        await insertUser(objectUser);
-        response.status(200).json({
-            error: false,
-            message: "User insertion with success"
-        });
+        const res = await insertUser(objectUser);
+        if (res.id) {
+            response.status(200).json({
+                error: false,
+                message: "User insertion with success"
+            });
+        } else {
+            response.status(200).json({
+                error: true
+            })
+        }
     } catch (error) {
         console.log(error);
         return response.status(500).json({ error: true, message: "Error while inserting user in db" });

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, InputNumber, Popconfirm, Table, Typography, Button } from 'antd';
+import { Form, Input, InputNumber, Popconfirm, Table, Typography } from 'antd';
 import axios from 'axios';
-import {Link } from 'react-router-dom'
+import NewUser from '../Users/NewUser';
 
 
 
@@ -62,7 +62,6 @@ const UsersTable: React.FC = () => {
   const [form] = Form.useForm();
   const [data, setData] = useState<Item[]>([])
   const [editingKey, setEditingKey] = useState('');
-  const [count, setCount] = useState(data.length);
 
 
   useEffect(() => {
@@ -95,17 +94,6 @@ const UsersTable: React.FC = () => {
     setEditingKey('');
   };
 
-  // handle add a new user
-  const handleAdd = () => {
-    const newData: Item = {
-      key: count.toString(),
-      username: 'Default Username',
-      phone: 'Default Phone',
-      email: 'Default Email',
-    };
-    setData([...data, newData]);
-    setCount(count + 1);
-  };
 
   //Handle Delet user
   const handleDelete = async (key: React.Key) => {
@@ -236,10 +224,10 @@ const UsersTable: React.FC = () => {
 
   return (
     <div style={{maxWidth: '70rem', marginInline: 'auto', marginBottom: '6rem'}}>
+    <div style={{marginBottom: 16}}>
+        <NewUser />
+      </div>
     <Form form={form} component={false}>
-       <Link to='/Adduser'>
-        <Button onClick={handleAdd} type="primary" style={{ marginBottom: 16, backgroundColor: 'red'}}>Add New User</Button>
-        </Link>
       <Table
         components={{
           body: {

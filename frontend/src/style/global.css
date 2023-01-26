@@ -162,3 +162,15 @@ button[id^="noanim-tab-example-tab-"]:hover {
     font-size: 20px;
     color: rgba(0,0,0, 0.7);
   }
+
+/* PopUp of adding user */
+.modal-dialog {
+    max-width: 47%;
+}
+.ant-row {
+    display: 'flex';
+    flex-flow: column wrap;
+    width: 100%;
+    align-items: flex-start;
+    
+}
