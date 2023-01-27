@@ -62,6 +62,7 @@ const UsersTable: React.FC = () => {
   const [form] = Form.useForm();
   const [data, setData] = useState<Item[]>([])
   const [editingKey, setEditingKey] = useState('');
+  const [loading, setLoading] = useState<boolean>(true)
 
 
   useEffect(() => {
@@ -78,7 +79,7 @@ const UsersTable: React.FC = () => {
       return userData
     })
     setData(userData as any)
-      
+    setLoading(false)
     }
     getUsers();
   },[])
@@ -99,7 +100,6 @@ const UsersTable: React.FC = () => {
   const handleDelete = async (key: React.Key) => {
     const user = JSON.parse(localStorage.getItem('user') as any);
     const deletedUser: any = data.filter((item) => item.key === key)
-    console.log(deletedUser[0].username)
     try {
       const res = await axios.delete(`http://localhost:5100/api/v1/user?username=${deletedUser[0].username}`,
       { headers: {
@@ -239,6 +239,7 @@ const UsersTable: React.FC = () => {
         columns={mergedColumns}
         rowClassName="editable-row"
         pagination={false}
+        loading={loading}
         
       />
     </Form>

@@ -49,44 +49,55 @@ export async function UserByUsername(req: Request, response: Response): Promise<
 
 export async function addUser(request: Request, response: Response): Promise<any> {
     const objectUser = request.body;
-
     try {
 
         const oldUserEmail = await selectUsersByEmail(objectUser.email);
         const oldUserUsername = await selectUsersByUsername(objectUser.username);
         const oldUserPhone = await selectUsersByPhone(objectUser.phone)
     
-        if (oldUserEmail)
-        return response.status(200).json({ 
-            errorType: 1,
-            message: "User email already exists"
-        });
-        if (oldUserUsername)
-        return response.status(200).json({ 
-            errorType: 2,
-            message: "Username already exists"
-        });
-        if (oldUserPhone)
-        return response.status(200).json({ 
-            errorType: 3,
-            message: "User phone already exists"
-        });
+        if (oldUserEmail || oldUserUsername || oldUserPhone){
+            if (oldUserEmail && oldUserUsername && oldUserPhone) {
+                return response.status(200).json({err: true, message: "Username, Email, and Phone already exsits"});
+            } else if (oldUserEmail && oldUserUsername) {
+                return response.status(200).json({err: true, message: "Username and Email already exsits"});
+            } else if ( oldUserEmail && oldUserPhone ) {
+                return response.status(200).json({err: true, message: "Email and Phone already exsits"});
+            }else if ( oldUserUsername && oldUserPhone ) {
+                return response.status(200).json({err: true, message: "Username and Phone already exsits"});
+            } else {
+                if (oldUserEmail) {return response.status(200).json({ 
+                    err: true,
+                    message: "Email already exists"
+                })}
+                
+                if (oldUserUsername) {return response.status(200).json({
+                    err: true,
+                    message: "Username already exists"
+                });}
+                if (oldUserPhone) {return response.status(200).json({ 
+                    err: true,
+                    message: "Phone already exists"
+                })
+                }
+            }
+        }
 
-
+        console.log("user obj", objectUser)
         const res = await insertUser(objectUser);
+        console.log("res: ", res)
         if (res.id) {
             response.status(200).json({
-                error: false,
+                err: false,
                 message: "User insertion with success"
             });
         } else {
             response.status(200).json({
-                error: true
+                err: true
             })
         }
     } catch (error) {
-        console.log(error);
-        return response.status(500).json({ error: true, message: "Error while inserting user in db" });
+        
+        return response.status(500).json({ error: true, message: "Error while inserting user" });
     }
 
 }

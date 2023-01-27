@@ -6,7 +6,6 @@ import Main from '../Pages/Main';
 import Login from '../Pages/Login';
 import Profile from '../Pages/Profile';
 import UserList from '../Pages/UserList'
-import AddUser from '../Pages/AddUser';
 import Error from '../Pages/Error';
 import Chart from '../Pages/ChartPage';
 
@@ -26,7 +25,6 @@ function App() {
             <Route path="/" element={<Main />}/> 
             <Route path="/profile" element={<Profile/>}/>
             <Route path="/users" element={<UserList/>} />
-            <Route path="/adduser" element={<AddUser/>} /> 
           </Route>
         <Route path="*" element={<Error />} />
       </Routes>
