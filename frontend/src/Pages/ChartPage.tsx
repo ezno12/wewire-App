@@ -53,9 +53,12 @@ const ChartPage: React.FC = () => {
     }
 
     useEffect(()=> {
+        const controller = new AbortController();
         const getData = async () => {
             let newId: number = 0
-            const res = await axios("http://localhost:5100/api/v1/chart/")
+            const res = await axios.get("http://localhost:5100/api/v1/chart/", {
+              signal: controller.signal
+            })
             setItems(res.data.data)
             // ChartData last ID for new row count
             res.data.data.map((chart: any) =>  {
@@ -70,7 +73,10 @@ const ChartPage: React.FC = () => {
         }
         getData()
         
-    }, [handleDeleteChart])
+        return () => {
+          controller.abort()
+        }
+    }, [])
 
     return (
     <>

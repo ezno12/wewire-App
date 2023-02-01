@@ -1,7 +1,7 @@
 import { Response, Request } from "express";
 import  jwt from "jsonwebtoken"
 import { selectUsers, insertUser, verifyLogin, selectUsersByEmail, deleteUserService,
-    selectUsersByUsername, selectUsersByPhone, UpdateUserData } from "@services/users/users";
+    selectUsersByUsername, selectUsersByPhone, selectUsersById,UpdateUserData } from "@services/users/users";
 
 
 export async function getUsers(_: Request, response: Response): Promise<any> {
@@ -13,6 +13,31 @@ export async function getUsers(_: Request, response: Response): Promise<any> {
         console.log(error);
     }
 }
+
+export async function UserById(req: Request, response: Response): Promise<any> {
+    try {
+        const id = Number(req.query.id);        
+        const result = await selectUsersById(id as number);
+        if (result) { response.json(
+            {
+              error: false,
+              data: {
+                id: result.id,
+                username: result.username,
+                email: result.email,
+                phone: result.phone
+            }
+            }) }
+        else {
+            response.json({ error: true, message: "user does not exist !" })
+        }
+
+    } catch (error) {
+        response.json({ error: true, message: "Error while getting users" })
+        console.log(error);
+    }
+}
+
 
 export async function UserByEmail(req: Request, response: Response): Promise<any> {
     try {
@@ -82,7 +107,6 @@ export async function addUser(request: Request, response: Response): Promise<any
             }
         }
 
-        console.log("user obj", objectUser)
         const res = await insertUser(objectUser);
         console.log("res: ", res)
         if (res.id) {
@@ -118,16 +142,17 @@ export async function login(request: Request, response: Response): Promise<any> 
 
         if (result) {
             const token = jwt.sign(
-                {  isAdmin: oldUser.isAdmin },
+                {  
+                    id: oldUser.id,
+                    isAdmin: oldUser.isAdmin,
+                    permission: oldUser.permission,
+                 },
                 process.env.ACCESS_TOKEN_SECRET,
-                { expiresIn: "24h" }
+                { expiresIn: "20s" }
               );
             return response.status(200).json({
                 error: false,
                 token: token,
-                admin: true,
-                permission: result.permission
-
             })
         } else {
             return response.status(500).json({ error: true, data: "Error while getting users" })
@@ -143,7 +168,7 @@ export async function deleteUser(request: Request, response: Response): Promise<
         const username = request.query.username;
 
         const result = await deleteUserService(username as string);
-            console.log(result)
+        //return: 1 user deleted, 0 user not deleted
         if (result != 0) {
             return response.status(200).json({ error: false, message: "User deleted with success" });
         } else {

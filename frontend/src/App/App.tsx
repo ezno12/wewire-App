@@ -11,23 +11,24 @@ import Chart from '../Pages/ChartPage';
 
 
 
-
 function App() {
-    
+  
   return (
+      <>
       <Routes>
         {/* Public Routing */}
         <Route path="login"  element={<Login />}/>
-        <Route path="chart"  element={<Chart />}/>
 
         {/* Admin Routing */}
           <Route element={<AdminRoute />}>
             <Route path="/" element={<Main />}/> 
+            <Route path="chart"  element={<Chart />}/>
             <Route path="/profile" element={<Profile/>}/>
             <Route path="/users" element={<UserList/>} />
           </Route>
         <Route path="*" element={<Error />} />
       </Routes>
+      </>
   );
 }
 

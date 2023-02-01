@@ -174,3 +174,12 @@ button[id^="noanim-tab-example-tab-"]:hover {
     align-items: flex-start;
     
 }
+/* User Profile update personal data*/
+.ant-avatar {
+    width: 164px !important; 
+    height: 164px !important;
+    background-color: #d23636 !important;
+}
+.anticon-user {
+    font-size: 140px;
+}

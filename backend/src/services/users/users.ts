@@ -42,6 +42,14 @@ export async function selectUsersByPhone(phone: string) {
         console.log(error);
     }
 }
+export async function selectUsersById(id: number) {
+    try {
+        const result = await User.findOne({ where: { id: id }})
+        return result;
+    } catch (error) {
+        console.log(error);
+    }
+}
 // Delete User
 export async function deleteUserService(username: string) {
     try {
@@ -89,6 +97,7 @@ export async function verifyLogin(objectLogin: LoginType) {
     }
 }
 export async function UpdateUserData(UserObject) {
+    console.log("user obj", UserObject)
     try {
         let userToUpdate = await User.findByPk(UserObject.id)
         
@@ -97,7 +106,9 @@ export async function UpdateUserData(UserObject) {
                 email: UserObject.email,
                 phone: UserObject.phone
         })
+        console.log("user update", uptedUser)
         const res = await uptedUser.save()
+        console.log('save res', res)
         
         if(res) {
             return res
