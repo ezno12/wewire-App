@@ -3,6 +3,7 @@ import { StyleSheet, css } from 'aphrodite'
 import logo from '../../assat/wewire.webp'
 import logOutIcon from '../../assat/logout.webp'
 import { Link } from 'react-router-dom'
+import jwtDecode from 'jwt-decode'
 
 const styles = StyleSheet.create({
     navStyle: {
@@ -39,8 +40,7 @@ const styles = StyleSheet.create({
 })
 
 export default function NavBar() {
-  // const user = JSON.parse(localStorage.getItem('user') as any);
-  
+  const user: any = jwtDecode(JSON.parse(localStorage.getItem('user') as any));
 
   const HandleLogOut = () => {
     localStorage.clear();
@@ -53,12 +53,13 @@ export default function NavBar() {
 
   <div>
     <ul className={css(styles.listStyle)}>
-      <li>
+      {user.isAdmin && <li>
         <Link to={'/users'} className={css(styles.linkStyle)}>Users</Link>
-      </li>
-      <li>
+      </li>}
+      {user.permission !== 0 &&
+        <li>
         <Link to={'/profile'} className={css(styles.linkStyle)} >Profile</Link>
-      </li>
+      </li>}
       <li>
         <Link to={'/login'} onClick={HandleLogOut} className={css(styles.linkStyle)}> Log Out <img src={logOutIcon} alt='logout icon' className={css(styles.logOutIconStyle)} /></Link>
       </li>

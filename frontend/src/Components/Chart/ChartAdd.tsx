@@ -1,4 +1,5 @@
 import React, { useState, useReducer, useEffect} from 'react';
+import { useParams } from 'react-router-dom';
 import { Button, message, Steps, Card, Segmented, Alert } from 'antd';
 import Form from 'react-bootstrap/Form';
 import {css, StyleSheet } from 'aphrodite';
@@ -18,13 +19,14 @@ import {
   setChartTitle,
   setChartType,
 } from '../../Redux/ChartRedux'
+import jwtDecode from 'jwt-decode';
 
 
 
 type stepsStatusType = "error" | "wait" | "process" | "finish" | undefined
 
 
-const departements = ['Management' , 'Maintenance', 'Quality', 'Security', 'Environment', 'IE', 'Logistic', 'RH', 'Production', 'IT']
+const departements = ['Management' , 'Maintenance', 'Quality', 'Security', 'Environment', 'IE', 'Logistic', 'HR', 'Production', 'IT']
 const { Meta } = Card;
 
 const styles = StyleSheet.create({
@@ -78,9 +80,9 @@ const styles = StyleSheet.create({
 
 // Component of First Step
 const FirstStep: React.FC = () => {
-  
+  const user: any = jwtDecode(JSON.parse(localStorage.getItem('user') as any));
+  let { deparName } = useParams<string>()
   const initialState = {title: "", depar: ""}  
-  
   const dispatch = useAppDispatch()
   const [TitleState, updateState] = useReducer(
     (state: any, updates: any) =>  ({ ...state, ...updates }), initialState)
@@ -133,6 +135,7 @@ const FirstStep: React.FC = () => {
       <Form.Select >
       <option >Choose Departements</option>
         {departements.map((item) => {
+          if (item === deparName?.slice(1,) || user.isAdmin)
           return (<option >{item}</option>)
         })}
       </Form.Select>
@@ -196,6 +199,7 @@ const AddChart: React.FC = () => {
   const chartID = useAppSelector((state) => state.newCharts.chartId)
   const ChartData = useAppSelector((state) => state.newCharts.chartData)
   const dispatch = useAppDispatch()
+  let { deparName } = useParams<string>()
 
 
 
@@ -203,7 +207,7 @@ const AddChart: React.FC = () => {
     const oldChartData = async () => {
       let lgChartId: number = 0
       let lgChartDataId: number = 0
-      const res = await axios("http://localhost:5100/api/v1/chart/")
+      const res = await axios(`http://localhost:5100/api/v1/chart/?name=${deparName?.slice(1,)}`)
       // eslint-disable-next-line
       res.data.data.map((chart: any) => {
         Number(chart.id) >= lgChartId && (lgChartId = Number(chart.id))
@@ -279,7 +283,7 @@ const AddChart: React.FC = () => {
     const oldChartData = async () => {
       let lgChartId: number = 0
       let lgChartDataId: number = 0
-      const res = await axios("http://localhost:5100/api/v1/chart/")
+      const res = await axios(`http://localhost:5100/api/v1/chart/?name=${deparName?.slice(1,)}`)
       res.data.data.map((chart: any) => {
         chart.id >= lgChartId && (lgChartId = chart.id)
         chart.ChartData.map(({id}: any) => {

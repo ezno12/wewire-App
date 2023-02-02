@@ -1,10 +1,11 @@
 import { Response, Request } from "express";
 import { GetChartData, AddChart, UpdateChart, deleteChart, deleteChartRow, addChartRow} from "@services/Charts/ChartService";
 
-export async function chartData(_: Request, response: Response): Promise<any> {
+export async function chartData(req: Request, response: Response): Promise<any> {
     try {
-        
-        const res = await GetChartData()
+        const depar = req.query.name
+
+        const res = await GetChartData(depar as string)
 
         if (res) {
             response.json({error: false, data: res})

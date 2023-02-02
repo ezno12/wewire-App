@@ -1,7 +1,7 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Route, Routes} from 'react-router-dom';
-import { AdminRoute } from '../Hooks/ProtectedRoute';
+import AuthVerify from '../Hooks/ProtectedRoute';
 import Main from '../Pages/Main';
 import Login from '../Pages/Login';
 import Profile from '../Pages/Profile';
@@ -19,10 +19,12 @@ function App() {
         {/* Public Routing */}
         <Route path="login"  element={<Login />}/>
 
-        {/* Admin Routing */}
-          <Route element={<AdminRoute />}>
+        {/* Auth Routing */}
+          <Route element={<AuthVerify />}>
             <Route path="/" element={<Main />}/> 
-            <Route path="chart"  element={<Chart />}/>
+            <Route path="/chart">
+              <Route path=":deparName" element={<Chart />}/>
+            </Route>
             <Route path="/profile" element={<Profile/>}/>
             <Route path="/users" element={<UserList/>} />
           </Route>

@@ -148,7 +148,7 @@ export async function login(request: Request, response: Response): Promise<any> 
                     permission: oldUser.permission,
                  },
                 process.env.ACCESS_TOKEN_SECRET,
-                { expiresIn: "20s" }
+                { expiresIn: "24h" }
               );
             return response.status(200).json({
                 error: false,

@@ -51,7 +51,12 @@ const Cards = () => {
       <div className={css(styles.cardStyle)}> 
       
         {Departements && Departements.slice(0,10).map((items, index) => {
-          return <Card key={items.id} title={items.title + " - " + items.arTitle} img={DeparImg[index]}/>
+          return <Card
+                    key={items.id}
+                    title={items.title + " - " + items.arTitle}
+                    img={DeparImg[index]}
+                    deparName={items.title}
+                  />
         })
         }
     </div>

@@ -1,15 +1,17 @@
 import { Chart, ChartData } from '../../../models'
 
 // Get all chart data from DB
-export async function GetChartData() {
+export async function GetChartData(depar) {
     try {
-        
-        let result = await Chart.findAll({
-            include: [
-                {model: ChartData}
-            ]
-        })
-        return   result;
+        if (depar) {
+            let result = await Chart.findAll({
+                where: {departements: depar},
+                include: [
+                    {model: ChartData}
+                ]
+            })
+            return   result;
+        }
     } catch (error) {
         console.log(error);
     }

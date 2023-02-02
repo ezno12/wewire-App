@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef} from 'react';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import "../style/global.css"
 import Tab from 'react-bootstrap/Tab';
@@ -10,6 +11,7 @@ import NavBar from '../Components/NavBar/NavBar';
 import { PieChart, RoseChart, ColChart } from '../Components/Chart/charts';
 import  ChartUpdate from '../Components/Chart/ChartUpdate'
 import  AddChart from '../Components/Chart/ChartAdd'
+import jwtDecode from 'jwt-decode';
 
 
 const styles = StyleSheet.create({
@@ -31,15 +33,30 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-  }
+  },
+  hideTabStyle: {
+    display: 'none'
+  },
+  showTabStyle: {
+    visibility: 'visible'
+  },
+  
 })
-
+ const deparCode: any = {
+0: 'Regular User', 1: 'Management', 2: 'Maintenance',
+ 3: 'Quality', 4: 'Security', 5: 'Environment',
+ 6: 'IE', 7: 'Logistic', 8: 'IT',
+ 9: 'Production', 10: 'RH'
+}
 
 const ChartPage: React.FC = () => {
+    const user: any = jwtDecode(JSON.parse(localStorage.getItem('user') as any));
     const [items, setItems] = useState<any[]>([]);
     const [lastId, setLastId] = useState(0);
     const [loading, setLoading] = useState(true)
     const [delKey, setDelKey] = useState<number>();
+    let { deparName } = useParams<string>()
+    const effectRun = useRef(false);
 
     const getChartKey = (id: number) => {
       setDelKey(id)
@@ -53,10 +70,12 @@ const ChartPage: React.FC = () => {
     }
 
     useEffect(()=> {
+        let isMounted = true;
         const controller = new AbortController();
+        if (effectRun.current === true) {
         const getData = async () => {
             let newId: number = 0
-            const res = await axios.get("http://localhost:5100/api/v1/chart/", {
+            const res = await axios.get(`http://localhost:5100/api/v1/chart/?name=${deparName?.slice(1,)}`, {
               signal: controller.signal
             })
             setItems(res.data.data)
@@ -73,10 +92,14 @@ const ChartPage: React.FC = () => {
         }
         getData()
         
-        return () => {
-          controller.abort()
-        }
-    }, [])
+        
+      }
+      return () => {
+        isMounted = false;
+        controller.abort();
+        effectRun.current = true;
+      }
+    }, [deparName])
 
     return (
     <>
@@ -87,26 +110,28 @@ const ChartPage: React.FC = () => {
       </div>
      : <Tabs
       onChange={(key) => console.log("Clicked",key)}
-      defaultActiveKey ={'update'}
+      defaultActiveKey ={deparCode[user.permission] ===  deparName?.slice(1,) || user.isAdmin ? 'update' : 0}
       transition={false}
       id="noanim-tab-example"
       className={css(styles.tabsStyle)}
     >
       {/* Button to update chart data*/}
-      <Tab title="Update Data" eventKey='update' >
-      <ChartUpdate items={items} lastId={lastId}/>
-      
+      <Tab
+        title="Update Data" eventKey='update'
+        tabClassName={ deparCode[user.permission] ===  deparName?.slice(1,) || user.isAdmin ? css(styles.showTabStyle) : css(styles.hideTabStyle)}
+        disabled={deparCode[user.permission] ===  deparName?.slice(1,) || user.isAdmin ? false : true}
+        >
+        <ChartUpdate items={items} lastId={lastId}/>
+      </Tab> 
       {/* Charts */}
-      </Tab>
-      
       { items.map(({id, title, Type, ChartData})=> {
         const CompChartList: any = {
             'pie': <PieChart dataItem={ChartData}/>,
             'rose': <RoseChart  dataItem={ChartData}/>,
             'col': <ColChart dataItem={ChartData}/>
           }
-          
-        return  (
+
+          return  (
             <Tab 
               eventKey={id}
               key={id}
@@ -116,6 +141,8 @@ const ChartPage: React.FC = () => {
                 title="Are you sure to delete this Chart?"
                 icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
                 onConfirm={handleDeleteChart}
+                className={ deparCode[user.permission] ===  deparName?.slice(1,) || user.isAdmin ? css(styles.showTabStyle) : css(styles.hideTabStyle)}
+                disabled={deparCode[user.permission] ===  deparName?.slice(1,) || user.isAdmin ? false : true}
               >
                 <span className={css(styles.btnClose)} onClick={() => getChartKey(Number(id))}>&times;</span>
               </Popconfirm>
@@ -124,10 +151,14 @@ const ChartPage: React.FC = () => {
               {CompChartList[Type]}
             </Tab>
         )
-      })}
-      <Tab title={<PlusOutlined />} eventKey='add'>
+        })}
+      <Tab
+        title={<PlusOutlined />} eventKey='add'
+        tabClassName={ deparCode[user.permission] ===  deparName?.slice(1,) || user.isAdmin ? css(styles.showTabStyle) : css(styles.hideTabStyle)}
+        disabled={ deparCode[user.permission] ===  deparName?.slice(1,) || user.isAdmin ? false : true}
+      >
         <AddChart />
-      </Tab>
+    </Tab>
     </Tabs>}
     </>
   )

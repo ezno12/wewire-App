@@ -27,15 +27,16 @@ const styles = StyleSheet.create({
 
 type cardProps = {
   img: string,
-  title: string
+  title: string,
+  deparName: string
 }
 
 
-const card = ({img, title}: cardProps) => {
+const card = ({img, title, deparName}: cardProps) => {
   
   return (
     <>
-    <Link to={'/chart'} className={css(styles.cardTitleStyle)}>
+    <Link to={`/chart/:${deparName}`} className={css(styles.cardTitleStyle)}>
     <Card className={css(styles.cardStyle)}>
       <Card.Img variant="top" className={css(styles.cardImg)} src={img}/>
       <Card.Body>
